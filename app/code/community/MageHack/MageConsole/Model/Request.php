@@ -6,7 +6,7 @@
  */
 class MageHack_MageConsole_Model_Request extends MageHack_MageConsole_Model_Abstract
 {
-    
+
     /**
      * Entity model
      *
@@ -26,7 +26,7 @@ class MageHack_MageConsole_Model_Request extends MageHack_MageConsole_Model_Abst
         'customer'      => 'mageconsole/request_customer',
         'address'       => 'mageconsole/request_address',
         'invoice'       => 'mageconsole/request_invoice',
-        'order'         => 'mageconsole/request_order',
+        'order'         => 'mageconsole/request_sales_order',
         'shipment'      => 'mageconsole/request_shipment',
         ''              => 'mageconsole/request_help',
     );
@@ -56,14 +56,14 @@ class MageHack_MageConsole_Model_Request extends MageHack_MageConsole_Model_Abst
         if (is_null($entity)) {
             return $this->_entityMapping;
         }
-        
+
         if (array_key_exists($entity, $this->_entityMapping)) {
             return $this->_entityMapping[$entity];
         }
-        
+
         return false;
     }
-    
+
     /**
      * Get action mapping
      *
@@ -74,14 +74,14 @@ class MageHack_MageConsole_Model_Request extends MageHack_MageConsole_Model_Abst
         if (is_null($action)) {
             return $this->_actionMapping;
         }
-        
+
         if (array_key_exists($action, $this->_actionMapping)) {
             return $this->_actionMapping[$action];
         }
-        
+
         return false;
-    }    
-    
+    }
+
     /**
      * Get entity model
      *
@@ -91,17 +91,17 @@ class MageHack_MageConsole_Model_Request extends MageHack_MageConsole_Model_Abst
     {
         return $this->_entityModel;
     }
-    
+
     /**
      * Set entity model
      *
-     * @param   MageHack_MageConsole_Model_Abstract $entityModel 
+     * @param   MageHack_MageConsole_Model_Abstract $entityModel
      */
     public function setEntityModel($entityModel)
     {
         $this->_entityModel = $entityModel;
         return $this;
-    }    
+    }
 
     /**
      * Dispatch request
@@ -110,7 +110,7 @@ class MageHack_MageConsole_Model_Request extends MageHack_MageConsole_Model_Abst
      * @return  array
      */
     public function dispatch()
-    {               
+    {
         if (!$actionName = $this->getActionMapping($this->getAction())) {
             Mage::throwException('Invalid action: ' . $this->getAction());
         }
@@ -118,15 +118,15 @@ class MageHack_MageConsole_Model_Request extends MageHack_MageConsole_Model_Abst
         if (!$entityModelName = $this->getEntityMapping($this->getEntity())) {
             Mage::throwException('Invalid entity: ' . $this->getEntity());
         }
-                
+
         if (!$entityModel = Mage::getModel($entityModelName)) {
             Mage::throwException('Model cannot be found: ' . $entityModel);
         }
-                
+
         $entityModel->setRequest($this->getRequest());
         $this->setEntityModel($entityModel);
-        call_user_func(array($entityModel, $actionName));                
-        
+        call_user_func(array($entityModel, $actionName));
+
         return $this->getEntityModel();
     }
 }

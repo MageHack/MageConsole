@@ -7,6 +7,8 @@
  */
 class MageHack_MageConsole_Model_Request_Product extends MageHack_MageConsole_Model_Abstract implements MageHack_MageConsole_Model_Request_Interface {
 
+    protected $_attrToShow = array('name' => 'name', 'sku' => 'sku');
+
     /**
      * Get instance of product model
      *
@@ -82,7 +84,33 @@ class MageHack_MageConsole_Model_Request_Product extends MageHack_MageConsole_Mo
      * @return  MageHack_MageConsole_Model_Abstract
      */
     public function listing() {
-        
+        $collection = $this->_getModel()
+                ->getCollection();
+        foreach ($this->getConditions() as $condition) {
+            $collection->addFieldToFilter($condition['attribute'], array($condition['operator'] => $condition['value']));
+        }
+        foreach ($this->_attrToShow as $attr) {
+            $collection->addAttributeToSelect($attr);
+        }
+
+        if (!$collection->count()) {
+            $message = 'No match found';
+        } else if ($collection->count() > 0) {
+            $values = $collection->toArray();
+            foreach ($values as $row) {
+                $_values[] = (array_intersect_key($row, $this->_attrToShow));
+            }
+            $message = Mage::helper('mageconsole')->createTable($_values);
+        }
+
+        $this->setType(self::RESPONSE_TYPE_MESSAGE);
+        $this->setMessage($message);
+
+        return $this;
+    }
+
+    protected function _reduceArray($val) {
+        return (in_array($val, $this->_attrToShow));
     }
 
     /**

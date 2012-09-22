@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @category    MageHack
  * @package     MageHack_MageConsole
@@ -11,9 +12,33 @@ class MageHack_MageConsole_Helper_Data extends Mage_Core_Helper_Abstract {
      *
      * @return  boolean
      */
-    public function isEnabled()
-    {
+    public function isEnabled() {
         $enabled = (Mage::getStoreConfig('admin/mageconsole/enable') == 1) ? true : false;
         return $enabled;
     }
+
+    public function createTable(array $data, $showHeader = true) {
+        $table = new Zend_Text_Table(array('columnWidths' => array(10, 20)));
+
+        if ($showHeader) {
+            $table->appendRow($this->getHeader($data));
+        }
+        foreach ($data as $row) {
+            $table->appendRow($row);
+        }
+
+        return (string) $table;
+    }
+
+    public function getHeader($data) {
+        $header = array();
+        foreach ($data as $row) {
+            foreach ($row as $key => $value) {
+                if (!in_array($key, $header))
+                    $header[] = $key;
+            }
+        }
+        return $header;
+    }
+
 }

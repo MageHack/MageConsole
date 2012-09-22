@@ -10,35 +10,37 @@
     <form method="post" action="" id="terminalForm">
         <input name="form_key" type="hidden" value="<?php echo $this->getFormKey() ?>" />
         <input name="command" type="hidden" value="" id="terminalCmd" />
-        <div id="terminal"></div>
     </form>
+    <div id="terminal"></div>
     <script type="text/javascript">
-    jQuery(function($, undefined) {
-        $('#terminal').terminal(function(cmd, term) {
-            if (cmd !== '') {
-                jQuery('#terminalCmd').val(cmd);
-                try {
-                    $.ajax({
-                        type: "POST",
-                        data: $('#terminalForm').serialize(),
-                        dataType: 'json',
-                        url: "<?php echo $this->getSubmitUrl(); ?>",
-                      }).done(function (data) {
-                        if(data && data.status == 'OK') {
-                          term.echo(data.message);
-                        } else {
-                            term.error(new String(data.message));
-                        }
-                      });
-                } catch(e) {
-                    term.error(new String(e));
+    //<![CDATA[
+        jQuery(function($, undefined) {
+            $('#terminal').terminal(function(cmd, term) {
+                if (cmd !== '') {
+                    jQuery('#terminalCmd').val(cmd);
+                    try {
+                        $.ajax({
+                            type: "POST",
+                            data: $('#terminalForm').serialize(),
+                            dataType: 'json',
+                            url: "<?php echo $this->getSubmitUrl(); ?>",
+                        }).done(function (data) {
+                            if(data && data.status == 'OK') {
+                                term.echo(data.message);
+                            } else {
+                                term.error(new String(data.message));
+                            }
+                        });
+                    } catch(e) {
+                        term.error(new String(e));
+                    }
                 }
-            }
-        }, {
-            greetings: 'Magento Console',
-            name: 'mageconsole',
-            height: 200,
-            prompt: 'Mage> '});
-    });
+            }, {
+                greetings: 'Magento Console',
+                name: 'mageconsole',
+                height: 200,
+                prompt: 'Mage>'});
+        });
+    //]]>
     </script>
 <?php endif; ?>

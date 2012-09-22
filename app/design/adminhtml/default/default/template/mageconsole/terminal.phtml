@@ -60,7 +60,20 @@
                 name: 'mageconsole',
                 height: 200,
                 tabcompletion: true,
-                prompt: 'Mage> '});
+                prompt: 'Mage> ',
+                keydown: function (e) {
+                    if (e.which == 67 && e.ctrlKey) {
+                        e.preventDefault();
+                        //alert('ctrl-c placeholder');
+                        console.log(this);
+                        this.close();
+                        return false;
+                    } else if (e.which == 68 && e.ctrlKey) {
+                        e.preventDefault();
+                        // TODO save()
+                        return false;
+                    }
+                }});
         });
     //]]>
     </script>

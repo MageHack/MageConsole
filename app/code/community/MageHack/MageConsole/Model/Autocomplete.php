@@ -8,14 +8,49 @@ class MageHack_MageConsole_Model_Autocomplete extends MageHack_MageConsole_Model
 {
 
     /**
+     * Get request model
+     *
+     * @return  MageHack_MageConsole_Model_Request
+     */
+    public function _getRequestModel()
+    {
+        return Mage::getModel('mageconsole/request');
+    }
+    
+    /**
+     * Auto complete entity
+     *
+     * @param   string  $entityPart
+     * @return  string
+     */
+    protected function _completeEntity($entityPart)
+    {
+        $message        = $message;
+        $entities       = array_keys($this->_getRequestModel()->getEntityMapping());
+        $autocomplete   = array();
+        
+        foreach ($entities as $entity) {
+            if (preg_match('/^' . $entityPart .'.+/', $entity)) {
+                $autocomplete[] = $entity;
+            }
+        }
+                
+        return implode(' ', $autocomplete);
+    }
+
+    /**
      * Get options
      *
      * @return  MageHack_MageConsole_Model_Autocomplete
      */
     public function getOptions()
-    {             
-        $this->setType(self::RESPONSE_TYPE_LIST);
-        $this->setMessage(array($this->getEntity()));
+    {        
+        /* Entity autocompletion */     
+        if (!$this->getRequest(2)) {
+            $this->setMessage($this->_completeEntity($this->getRequest(1)));
+        }
+
+        $this->setType(self::RESPONSE_TYPE_MESSAGE);
         
         return $this;   
     }

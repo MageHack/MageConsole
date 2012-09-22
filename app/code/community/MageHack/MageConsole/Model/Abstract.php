@@ -4,7 +4,7 @@
  * @package     MageHack_MageConsole
  * @license     http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
-abstract class MageHack_MageConsole_Model_Abstract extends Mage_Core_Model_Abstract
+abstract class MageHack_MageConsole_Model_Abstract
 {
     
     /**
@@ -14,27 +14,61 @@ abstract class MageHack_MageConsole_Model_Abstract extends Mage_Core_Model_Abstr
     const RESPONSE_TYPE_MESSAGE = 'MESSAGE';
     const RESPONSE_TYPE_LIST    = 'LIST';
     const RESPONSE_TYPE_ERROR   = 'ERROR';
+    
+    /**
+     * 'WHERE' keyword
+     */
+    const WHERE = 'where';
+    
+    /**
+     * Operators
+     *
+     * @var     array
+     */
+    protected $_operators = array(
+        '='         => 'eq',
+        '<'         => 'lt',
+        '<='        => 'lteq',
+        '>'         => 'gt',
+        '>='        => 'gteq',
+        'eq'        => 'eq',
+        'neq'       => 'neq',     
+        'like'      => 'like',    
+        'in'        => 'in',      
+        'nin'       => 'nin',     
+        'notnull'   => 'notnull', 
+        'null'      => 'null',    
+        'moreq'     => 'moreq',   
+        'gt'        => 'gt',      
+        'lt'        => 'lt',      
+        'gteq'      => 'gteq',    
+        'lteq'      => 'lteq',    
+        'finset'    => 'finset',  
+        'regexp'    => 'regexp',  
+        'seq'       => 'seq',     
+        'sneq'      => 'sneq',    
+    );
 
     /**
      * Request
      *
      * @var     string
      */
-    var $_request;    
+    protected $_request;    
     
     /**
      * Type
      *
      * @var     string
      */
-    var $_type;
+    protected $_type;
 
     /**
      * Message
      *
      * @var     string
      */
-    var $_message;
+    protected $_message;
 
     /**
      * Set message
@@ -131,4 +165,73 @@ abstract class MageHack_MageConsole_Model_Abstract extends Mage_Core_Model_Abstr
     {
         return strtolower($this->getRequest(1));
     }
+    
+    /**
+     * Get conditions
+     *
+     * @return  array
+     */
+    public function getConditions()
+    {
+        $i      = 2;
+        $where  = 0;
+        
+        $index      = 'key';
+        $key        = null;
+        $value      = null;
+        $operator   = null;
+        $conditions = array();
+        
+        while (true) {
+            if (!$part = $this->getRequest($i)) {
+                break;
+            }
+                                    
+            if (!$where && strtolower($part) == self::WHERE) {
+                $where = 1;
+            } else {                
+                $continue = 1;
+                
+                if ($index == 'key' && $continue) {
+                    $key        = $part;
+                    $index      = 'operator';    
+                    $continue   = 0;                                                    
+                }
+                
+                if ($index == 'operator' && $continue) {
+                    if (array_key_exists($part, $this->_operators)) {
+                        $operator   = $this->_operators[$part];
+                        $continue   = 0;
+                    }
+                    
+                    $index = 'value';
+                }
+                
+                if ($index == 'value' && $continue) {
+                    $value  = $part;
+                    $index  = 'key';                    
+                }
+            }
+                    
+            if (!is_null($key) && !is_null($value)) {
+                if (is_null($operator)) {
+                    $operator = 'eq';
+                }
+                
+                $conditions[] = array(
+                    'attribute' => $key,
+                    'value'     => str_replace(array('\'', '"'), '', $value),
+                    'operator'  => $operator,
+                );
+                
+                $key        = null;
+                $value      = null;
+                $operator   = null;
+            }
+            
+            $i++;
+        }
+        
+        return $conditions;
+    }    
 }

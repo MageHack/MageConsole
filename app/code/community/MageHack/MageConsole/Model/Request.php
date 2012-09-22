@@ -121,8 +121,10 @@ class MageHack_MageConsole_Model_Request extends MageHack_MageConsole_Model_Abst
             Mage::throwException('Model cannot be found: ' . $entityModel);
         }
                 
-        $this->setEntityModel(call_user_func(array($entityModel, $actionName)));
-                
+        $entityModel->setRequest($this->getRequest());
+        $this->setEntityModel($entityModel);
+        call_user_func(array($entityModel, $actionName));                
+        
         return $this->getEntityModel();
     }
 }

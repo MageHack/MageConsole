@@ -9,8 +9,8 @@
 <layout>
     <default>
         <reference name="head">
-            <action method="addJs"><script>lib/jquery.terminal-src.js</script></action>
             <action method="addJs"><script>lib/jquery-1.8.2.min.js</script></action>
+            <action method="addJs"><script>lib/jquery.terminal-src.js</script></action>
         </reference>
     </default>
 </layout>

@@ -7,33 +7,33 @@
 ?>
 <?php $helper = Mage::helper('mageconsole'); ?>
 <?php if ($helper->isEnabled()): ?>
-    <form method="post" action="" id="terminalForm">
-        <input name="form_key" type="hidden" value="<?php echo $this->getFormKey() ?>" />
-        <input name="request" type="hidden" value="" id="terminalCmd" />
-    </form>
-    <div id="terminal"></div>
-    <script type="text/javascript">
+<form method="post" action="" id="terminalForm">
+    <input name="form_key" type="hidden" value="<?php echo $this->getFormKey() ?>" />
+    <input name="request" type="hidden" value="" id="terminalCmd" />
+</form>
+<div id="terminal"></div>
+<script type="text/javascript">
     //<![CDATA[
-        jQuery(function($, undefined) {
-            var mcterm = $('#terminal').terminal(function(cmd, term) {
-                if (cmd !== '') {
-                    term.pause();
-                    jQuery('#terminalCmd').val(cmd);
-                    try {
-                        $.ajax({
-                            type: "POST",
-                            data: $('#terminalForm').serialize(),
-                            dataType: 'json',
-                            url: "<?php echo $this->getSubmitUrl(); ?>",
-                        }).done(function (response) {
+    jQuery(function($, undefined) {
+        mcterm = $('#terminal').terminal(function(cmd, term) {
+            if (cmd !== '') {
+                term.pause();
+                jQuery('#terminalCmd').val(cmd);
+                try {
+                    $.ajax({
+                        type: "POST",
+                        data: $('#terminalForm').serialize(),
+                        dataType: 'json',
+                        url: "<?php echo $this->getSubmitUrl(); ?>",
+                    }).done(function (response) {
                             if(response && response.status == 'OK') {
                                 switch (response.type)
                                 {
                                     case "MESSAGE":
                                         if( Object.prototype.toString.call(response.message) === '[object Array]' ) {
-                                           for (var i = 0; i < response.message.length; i++) {
-                                              term.echo(response.message[i] + '\n');
-                                           }
+                                            for (var i = 0; i < response.message.length; i++) {
+                                                term.echo(response.message[i] + '\n');
+                                            }
                                         } else {
                                             term.echo(response.message);
                                         }
@@ -51,35 +51,46 @@
                             }
                             term.resume();
                         });
-                    } catch(e) {
-                        term.error(new String(e));
-                    }
+                } catch(e) {
+                    term.error(new String(e));
                 }
-            }, {
-                greetings: 'Magento Console',
-                name: 'mageconsole',
-                height: 200,
-                tabcompletion: true,
-                prompt: 'Mage> ',
-                keydown: function (e) {
-                    if (e.which == 67 && e.ctrlKey) {
-                        e.preventDefault();
-                        //alert('ctrl-c placeholder');
-                        mcterm.set_command('');
-                        return false;
-                    } else if (e.which == 68 && e.ctrlKey) {
-                        e.preventDefault();
-                        console.log('save');
-                        // TODO save()
-                        return false;
-                    } else if (e.which == 77 && (e.ctrlKey) && (e.shiftKey)) {
-                        e.preventDefault();
-                        jQuery('#terminal').toggle();
-                        $("html, body").animate({ scrollTop: $(document).height() }, "slow");
-                        return false;
-                    }
-                }});
-        });
+            }
+        }, {
+            greetings: 'Magento Console',
+            name: 'mageconsole',
+            height: 200,
+            tabcompletion: true,
+            prompt: 'Mage> ',
+            keydown: function (e) {
+                if (e.which == 67 && e.ctrlKey) {
+                    e.preventDefault();
+                    //alert('ctrl-c placeholder');
+                    mcterm.set_command('');
+                    return false;
+                } else if (e.which == 68 && e.ctrlKey) {
+                    e.preventDefault();
+                    console.log('save');
+                    // TODO save()
+                    return false;
+                } else if (e.which == 77 && (e.ctrlKey) && (e.shiftKey)) {
+                    e.preventDefault();
+                    jQuery('#terminal').hide();
+                    return false;
+                }
+            }});
+    });
     //]]>
-    </script>
+    jQuery(window).keydown(function (e){
+        // TODO this checking is ugly (css instead of enabled)
+        if (e.which == 77 && e.ctrlKey && mcterm.css('display')=='none') {
+            jQuery('#terminal').show();
+            mcterm.enable();
+            jQuery("html, body").animate({ scrollTop: jQuery(document).height() }, "slow");
+            e.preventDefault();
+            // TODO we have to check this why we have to throw this, it's OK for the demo
+            throw new Exception();
+            return false;
+        }
+    });
+</script>
 <?php endif; ?>

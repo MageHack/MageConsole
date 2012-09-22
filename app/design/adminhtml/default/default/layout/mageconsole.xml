@@ -12,5 +12,8 @@
             <action method="addJs"><script>lib/jquery-1.8.2.min.js</script></action>
             <action method="addJs"><script>lib/jquery.terminal-src.js</script></action>
         </reference>
+        <reference name="footer">
+            <block type="mageconsole/adminhtml_terminal" name="mageconsole_terminal" template="mageconsole/terminal.phtml"/>
+        </reference>
     </default>
 </layout>

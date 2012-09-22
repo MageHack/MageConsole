@@ -28,6 +28,7 @@ class MageHack_MageConsole_Model_Request extends MageHack_MageConsole_Model_Abst
         'invoice'       => 'mageconsole/request_invoice',
         'order'         => 'mageconsole/request_order',
         'shipment'      => 'mageconsole/request_shipment',
+        ''              => 'mageconsole/request_help',
     );
 
     /**
@@ -42,6 +43,7 @@ class MageHack_MageConsole_Model_Request extends MageHack_MageConsole_Model_Abst
         'delete'    => 'delete',
         'show'      => 'show',
         'list'      => 'listing',
+        'help'      => 'help',
     );
 
     /**

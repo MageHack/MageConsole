@@ -94,4 +94,16 @@ class MageHack_MageConsole_Model_Request_Product extends MageHack_MageConsole_Mo
     public function listing() {
         
     }
+
+    /**
+     * Help command
+     *
+     * @return MageHack_MageConsole_Model_Abstract
+     *
+     */
+    public function help() {
+	$this->setType(self::RESPONSE_TYPE_MESSAGE);
+        $this->setMessage('help was requested for a product - this is the help message');
+	return $this;
+    }
 }

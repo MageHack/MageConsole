@@ -57,7 +57,7 @@ class MageHack_MageConsole_MageconsoleController extends Mage_Adminhtml_Controll
             $response->setMessage($autocomplete->getMessage());
             $response->setType($autocomplete->getType());            
         } catch (Exception $e) {
-            $response->setType(MageHack_MageConsole_Model_Abstract::ERROR);            
+            $response->setType(MageHack_MageConsole_Model_Abstract::RESPONSE_TYPE_ERROR);            
             $response->setMessage($e->getMessage());
         }
 
@@ -85,7 +85,7 @@ class MageHack_MageConsole_MageconsoleController extends Mage_Adminhtml_Controll
             $response->setType($request->getType());
         } catch (Exception $e) {
             $response->setStatus('ERROR');
-            $response->setType(MageHack_MageConsole_Model_Abstract::ERROR);            
+            $response->setType(MageHack_MageConsole_Model_Abstract::RESPONSE_TYPE_ERROR);            
             $response->setMessage($e->getMessage());
         }
 

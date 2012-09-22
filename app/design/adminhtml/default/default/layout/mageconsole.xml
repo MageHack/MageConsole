@@ -10,6 +10,7 @@
     <default>
         <reference name="head">
             <action method="addJs"><script>lib/jquery-1.8.2.min.js</script></action>
+            <action method="addJs"><script>lib/jquery.mousewheel-min.js</script></action>
             <action method="addJs"><script>lib/jquery.terminal-src.js</script></action>
             <action method="addItem"><type>skin_css</type><name>mageconsole.css</name><params>media="screen, projection"</params></action>
         </reference>

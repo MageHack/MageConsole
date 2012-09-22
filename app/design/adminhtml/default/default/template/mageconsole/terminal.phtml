@@ -72,6 +72,11 @@
                         console.log('save');
                         // TODO save()
                         return false;
+                    } else if (e.which == 77 && (e.ctrlKey) && (e.shiftKey)) {
+                        e.preventDefault();
+                        jQuery('#terminal').toggle();
+                        $("html, body").animate({ scrollTop: $(document).height() }, "slow");
+                        return false;
                     }
                 }});
         });

@@ -26,7 +26,7 @@ class MageHack_MageConsole_Model_Request_Product extends MageHack_MageConsole_Mo
     public function add() {
        // var_dump('called');
         $this->setType(self::RESPONSE_TYPE_PROMPT);
-        $this->setMessage($this->_getAddPrompt());
+        $this->setMessage($this->getReqAttr());
 
         return $this;
     }

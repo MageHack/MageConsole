@@ -18,6 +18,17 @@ class MageHack_MageConsole_Block_Adminhtml_Terminal extends Mage_Adminhtml_Block
         return Mage::helper('adminhtml')->getUrl('adminhtml/mageconsole/submit');
     }
 
+    /**
+     * get Command saving URL
+     *
+     * @return string
+     */
+
+    public function getPromptUrl()
+    {
+        return Mage::helper('adminhtml')->getUrl('adminhtml/mageconsole/prompt');
+    }
+
 
     /**
      * get Autocomplete URL

@@ -47,10 +47,11 @@
                                         mcwizard.mattrs = response.message;
                                         for (key in mcwizard.mattrs) break;
                                         var aname = mcwizard.mattrs[key];
-                                        mcwizard.storedData  = new Array();
+                                        mcwizard.storedData  = new Object();
                                         mcwizard.actkey = key;
+                                        mcwizard.formkey = response.key;
                                         delete mcwizard.mattrs[key];
-                                        term.push(jt_prompt,{ prompt:aname+' ',name:key});
+                                        term.push(jt_prompt,{ prompt:aname+': ',name:key});
                                         break;
                                     case "ERROR":
                                         term.error(new String(response.message));
@@ -106,15 +107,27 @@
     function jt_prompt (cmd) {
         var oldkey = mcwizard.actkey;
         mcwizard.storedData[oldkey] = cmd;
-        console.log(mcwizard.storedData);
-        if(Object.keys(mcwizard.mattrs).length == 0) { console.log(mcwizard.storedData); mcterm.pop(); return false; }
+        console.log(mcwizard.mattrs);
+        if(Object.keys(mcwizard.mattrs).length == 0) {
+            console.log(mcwizard.storedData);
+            jQuery.ajax({
+                type: "POST",
+                data: { key: mcwizard.formkey, data: mcwizard.storedData },
+                dataType: 'json',
+                url: "<?php echo $this->getPromptUrl(); ?>",
+            }).done(function (response) {
+                    term.echo("Product is saved");
+                    mcterm.pop();
+                });
+            return false;
+        }
         var key = '';
         for (key in mcwizard.mattrs) break;
         var aname = mcwizard.mattrs[key];
         mcwizard.actkey = key;
         delete mcwizard.mattrs[key];
         mcterm.pop();
-        mcterm.push(jt_prompt,{ prompt:aname+' ',name: key});
+        mcterm.push(jt_prompt,{ prompt:aname+': ',name: key});
 //        term.echo(cmd);
     }
 

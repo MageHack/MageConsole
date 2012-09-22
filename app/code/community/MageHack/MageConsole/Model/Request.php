@@ -20,7 +20,7 @@ class MageHack_MageConsole_Model_Request extends MageHack_MageConsole_Model_Abst
      * @var array
      */
     var $_entityMapping = array(
-        'category'      => 'mageconsole/request_category',
+        'category'      => 'mageconsole/request_catalog_category',
         'product'       => 'mageconsole/request_product',
         'creditmemo'    => 'mageconsole/request_creditmemo',
         'customer'      => 'mageconsole/request_customer',

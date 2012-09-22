@@ -9,6 +9,17 @@ class MageHack_MageConsole_Model_Request_Sales_Order
     implements MageHack_MageConsole_Model_Request_Interface
 {
 
+    protected $_attrToShow = array(
+        'increment_id' => 'increment_id',
+        'customer_email' => 'customer_email',
+        'status' => 'status',
+        'created_at' => 'created_at'
+    );
+
+    protected $_columnWidths = array(
+        'columnWidths' => array(12, 40, 10, 20)
+    );
+
     /**
      * Get instance of Customer model
      *
@@ -105,7 +116,29 @@ class MageHack_MageConsole_Model_Request_Sales_Order
      */
     public function listing()
     {
+        $collection = $this->_getMatchedResults();
 
+        foreach ($this->_attrToShow as $attr) {
+            $collection->addAttributeToSelect($attr);
+        }
+
+        if (!$collection->count()) {
+            $message = 'No match found';
+        } else if ($collection->count() > 0) {
+            $values = $collection->toArray();
+            if (is_array($values) && $values['totalRecords'] > 0) {
+                foreach ($values['items'] as $row) {
+                    if (is_array($row)) {
+                        $_values[] = (array_intersect_key($row, $this->_attrToShow));
+                    }
+                }
+                $message = Mage::helper('mageconsole')->createTable($_values, true, $this->_columnWidths);
+            }
+        }
+
+        $this->setType(self::RESPONSE_TYPE_MESSAGE);
+        $this->setMessage($message);
+        return $this;
     }
 
     /**

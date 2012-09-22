@@ -83,6 +83,10 @@ class MageHack_MageConsole_MageconsoleController extends Mage_Adminhtml_Controll
             $response->setRequest($params['request']);
             $response->setMessage($request->getMessage());
             $response->setType($request->getType());
+            
+            if ($request->getType() == MageHack_MageConsole_Model_Abstract::RESPONSE_TYPE_PROMPT) {
+                $response->setKey(time());
+            }
         } catch (Exception $e) {
             $response->setStatus('ERROR');
             $response->setType(MageHack_MageConsole_Model_Abstract::RESPONSE_TYPE_ERROR);            

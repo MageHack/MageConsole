@@ -186,6 +186,18 @@ abstract class MageHack_MageConsole_Model_Abstract
             if (!$part = $this->getRequest($i)) {
                 break;
             }
+            
+            /* Support quotes */
+            if (preg_match("/('|\")/", $part)) {
+                $n = $i + 1;
+                
+                if ($nextPart = $this->getRequest($n)) {
+                    if (preg_match("/('|\")/", $nextPart)) {
+                        $part .= ' ' . $nextPart;
+                        $i++;
+                    }
+                }
+            }
 
             if (!$where && strtolower($part) == self::WHERE) {
                 $where = 1;

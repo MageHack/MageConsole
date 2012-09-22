@@ -15,6 +15,7 @@
 <script type="text/javascript">
     //<![CDATA[
     jQuery(function($, undefined) {
+        mcwizard = new Array();
         mcterm = $('#terminal').terminal(function(cmd, term) {
             if (cmd !== '') {
                 term.pause();
@@ -41,6 +42,16 @@
                                     case "LIST":
                                         break;
                                     case "PROMPT":
+                                        var key = '';
+                                        if(Object.keys(response.message).length == 0) break;
+                                        mcwizard.mattrs = response.message;
+                                        for (key in mcwizard.mattrs) break;
+                                        var aname = mcwizard.mattrs[key];
+                                        mcwizard.storedData  = new Array();
+                                        console.log('aaa');
+                                        mcwizard.actkey = key;
+                                        delete mcwizard.mattrs[key];
+                                        term.push(jt_prompt,{ prompt:aname+': ',name:key});
                                         break;
                                     case "ERROR":
                                         term.error(new String(response.message));
@@ -92,5 +103,22 @@
             return false;
         }
     });
+
+    function jt_prompt (cmd) {
+        var oldkey = mcwizard.actkey;
+        console.log(oldkey);
+        mcwizard.storedData[oldkey] = cmd;
+        console.log(mcwizard.storedData);
+        if(Object.keys(mcwizard.mattrs).length == 0) { console.log(mcwizard.storedData); mcterm.pop(); return false; }
+        var key = '';
+        for (key in mcwizard.mattrs) break;
+        var aname = mcwizard.mattrs[key];
+        mcwizard.actkey = key;
+        delete mcwizard.mattrs[key];
+        mcterm.pop();
+        mcterm.push(jt_prompt,{ prompt:aname+': ',name: key});
+//        term.echo(cmd);
+    }
+
 </script>
 <?php endif; ?>

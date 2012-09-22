@@ -91,4 +91,34 @@ class MageHack_MageConsole_MageconsoleController extends Mage_Adminhtml_Controll
 
         $this->getResponse()->setBody($response->toJson());
     }
+    
+    /**
+     * Submit prompt action
+     *
+     * @return  string
+     */
+    public function promptAction()
+    {
+        $params     = $this->getRequest()->getParams();
+        $response   = new Varien_Object();
+
+        try {
+            $key    = $params['key'];
+            $data   = $params['data'];
+            
+            if (empty($key) || empty($data)) {
+                Mage::throwException('Parameters key and data are required');
+            }            
+            
+            $response->setStatus('OK');
+            $response->setMessage('OK');
+            $response->setType(MageHack_MageConsole_Model_Abstract::RESPONSE_TYPE_MESSAGE);
+        } catch (Exception $e) {
+            $response->setStatus('ERROR');
+            $response->setType(MageHack_MageConsole_Model_Abstract::RESPONSE_TYPE_ERROR);            
+            $response->setMessage($e->getMessage());
+        }
+
+        $this->getResponse()->setBody($response->toJson());
+    }    
 }

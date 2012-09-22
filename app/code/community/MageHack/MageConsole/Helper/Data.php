@@ -1,5 +1,4 @@
 <?php
-
 /**
  * @category    MageHack
  * @package     MageHack_MageConsole
@@ -7,9 +6,14 @@
  */
 class MageHack_MageConsole_Helper_Data extends Mage_Core_Helper_Abstract {
 
-    public function isEnabled() {
+    /**
+     * Retrieve status
+     *
+     * @return  boolean
+     */
+    public function isEnabled()
+    {
         $enabled = (Mage::getStoreConfig('admin/mageconsole/enable') == 1) ? true : false;
         return $enabled;
     }
-
 }

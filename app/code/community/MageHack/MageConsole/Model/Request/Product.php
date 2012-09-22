@@ -24,7 +24,7 @@ class MageHack_MageConsole_Model_Request_Product extends MageHack_MageConsole_Mo
     public function add() {
         var_dump('called');
         $this->setType(self::RESPONSE_TYPE_PROMPT);
-        $this->setMessage($this->getReqAttr());
+        $this->setMessage($this->_getAddPrompt());
 
         return $this;
     }
@@ -105,9 +105,19 @@ class MageHack_MageConsole_Model_Request_Product extends MageHack_MageConsole_Mo
         $sql = "SELECT e.attribute_code, e.frontend_label FROM `eav_attribute` as e WHERE entity_type_id IN(select eat.entity_type_id FROM eav_entity_type as eat where eat.entity_type_code = 'catalog_product') and e.is_required =1 and frontend_label is not null";
 
         $connection = Mage::getSingleton('core/resource')->getConnection('core_read');
-
-        $attributes = $connection->fetchAll($sql);
+        $attributes = array();
+        $_attributes = $connection->fetchAll($sql);
+        if (count($_attributes) > 0) {
+            foreach ($_attributes as $_attribute) {
+                $attributes[$_attribute['attribute_code']] = $_attribute['frontend_label'];
+            }
+        }
         return $attributes;
+    }
+
+    protected function _getAddPrompt() {
+        $message = array_map(create_function('$val', 'return "Please enter $val :";'), array_values($this->getReqAttr()));
+        return $message;
     }
 
 }

@@ -13,7 +13,7 @@
             <action method="addJs"><script>lib/jquery.terminal-src.js</script></action>
             <action method="addItem"><type>skin_css</type><name>mageconsole.css</name><params>media="screen, projection"</params></action>
         </reference>
-        <reference name="footer">
+        <reference name="before_body_end">
             <block type="mageconsole/adminhtml_terminal" name="mageconsole_terminal" template="mageconsole/terminal.phtml"/>
         </reference>
     </default>

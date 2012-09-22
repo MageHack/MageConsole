@@ -17,6 +17,7 @@
         jQuery(function($, undefined) {
             $('#terminal').terminal(function(cmd, term) {
                 if (cmd !== '') {
+                    term.pause();
                     jQuery('#terminalCmd').val(cmd);
                     try {
                         $.ajax({
@@ -24,12 +25,31 @@
                             data: $('#terminalForm').serialize(),
                             dataType: 'json',
                             url: "<?php echo $this->getSubmitUrl(); ?>",
-                        }).done(function (data) {
-                            if(data && data.status == 'OK') {
-                                term.echo(data.message);
+                        }).done(function (response) {
+                            if(response && response.status == 'OK') {
+                                switch (response.type)
+                                {
+                                    case "MESSAGE":
+                                        if( Object.prototype.toString.call(response.message) === '[object Array]' ) {
+                                           for (var i = 0; i < response.message.length; i++) {
+                                              term.echo(response.message[i] + '\n');
+                                           }
+                                        } else {
+                                            term.echo(response.message);
+                                        }
+                                        break;
+                                    case "LIST":
+                                        break;
+                                    case "PROMPT":
+                                        break;
+                                    case "ERROR":
+                                        term.error(new String(response.message));
+                                        break;
+                                }
                             } else {
-                                term.error(new String(data.message));
+                                term.error(new String(response.message));
                             }
+                            term.resume();
                         });
                     } catch(e) {
                         term.error(new String(e));

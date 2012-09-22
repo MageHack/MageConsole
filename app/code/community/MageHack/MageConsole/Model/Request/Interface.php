@@ -29,13 +29,6 @@ interface MageHack_MageConsole_Model_Request_Interface
     public function remove();
 
     /**
-     * Delete command
-     *
-     * @return  MageHack_MageConsole_Model_Abstract
-     */
-    public function delete();
-
-    /**
      * Show command
      *
      * @return  MageHack_MageConsole_Model_Abstract

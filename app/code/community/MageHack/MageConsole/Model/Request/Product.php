@@ -47,16 +47,7 @@ class MageHack_MageConsole_Model_Request_Product extends MageHack_MageConsole_Mo
     public function remove() {
         
     }
-
-    /**
-     * Delete command
-     *
-     * @return  MageHack_MageConsole_Model_Abstract
-     */
-    public function delete() {
-        
-    }
-
+    
     /**
      * Show command
      *

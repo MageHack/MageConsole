@@ -9,7 +9,7 @@
 <?php if ($helper->isEnabled()): ?>
     <form method="post" action="" id="terminalForm">
         <input name="form_key" type="hidden" value="<?php echo $this->getFormKey() ?>" />
-        <input name="command" type="hidden" value="" id="terminalCmd" />
+        <input name="request" type="hidden" value="" id="terminalCmd" />
     </form>
     <div id="terminal"></div>
     <script type="text/javascript">

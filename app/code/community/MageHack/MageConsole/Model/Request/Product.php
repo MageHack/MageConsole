@@ -8,6 +8,16 @@ class MageHack_MageConsole_Model_Request_Product extends MageHack_MageConsole_Mo
 {
 
     /**
+     * Get instance of product model
+     *
+     * @return  Mage_Catalog_Model_Produt
+     */
+    protected function _getModel()
+    {
+        return Mage::getModel('catalog/product');
+    }
+
+    /**
      * Add command
      *
      * @return  MageHack_MageConsole_Model_Abstract
@@ -53,7 +63,27 @@ class MageHack_MageConsole_Model_Request_Product extends MageHack_MageConsole_Mo
      * @return  MageHack_MageConsole_Model_Abstract
      */
     public function show() {
+        $collection = $this->_getModel()
+            ->getCollection()
+            ->addAttributeToSelect('*');
+                    
+        foreach ($this->getConditions() as $condition) {
+            $collection->addFieldToFilter($condition['attribute'], array($condition['operator'] => $condition['value']));
+        }
         
+        if (!$collection->count()) {
+            $message    = 'No match found';
+        } else if ($collection->count() > 1) {
+            $message    = 'Multiple matches found, use the list command';
+        } else {
+            $product    = $collection->getFirstItem();
+            $message    = sprintf('Name: %s', $product->getName());
+        }
+        
+        $this->setType(self::RESPONSE_TYPE_MESSAGE);
+        $this->setMessage($message);
+        
+        return $this;
     }
 
     /**

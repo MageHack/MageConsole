@@ -48,10 +48,9 @@
                                         for (key in mcwizard.mattrs) break;
                                         var aname = mcwizard.mattrs[key];
                                         mcwizard.storedData  = new Array();
-                                        console.log('aaa');
                                         mcwizard.actkey = key;
                                         delete mcwizard.mattrs[key];
-                                        term.push(jt_prompt,{ prompt:aname+': ',name:key});
+                                        term.push(jt_prompt,{ prompt:aname+' ',name:key});
                                         break;
                                     case "ERROR":
                                         term.error(new String(response.message));
@@ -106,7 +105,6 @@
 
     function jt_prompt (cmd) {
         var oldkey = mcwizard.actkey;
-        console.log(oldkey);
         mcwizard.storedData[oldkey] = cmd;
         console.log(mcwizard.storedData);
         if(Object.keys(mcwizard.mattrs).length == 0) { console.log(mcwizard.storedData); mcterm.pop(); return false; }
@@ -116,7 +114,7 @@
         mcwizard.actkey = key;
         delete mcwizard.mattrs[key];
         mcterm.pop();
-        mcterm.push(jt_prompt,{ prompt:aname+': ',name: key});
+        mcterm.push(jt_prompt,{ prompt:aname+' ',name: key});
 //        term.echo(cmd);
     }
 

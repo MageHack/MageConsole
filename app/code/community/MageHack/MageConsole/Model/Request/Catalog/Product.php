@@ -53,30 +53,30 @@ class MageHack_MageConsole_Model_Request_Catalog_Product extends MageHack_MageCo
     public function add($data = null) {
         if (is_null($data)) {
             $this->setType(self::RESPONSE_TYPE_PROMPT);
-            $this->setMessage($this->_getReqAttr($this->_addAttributes));     
-            return $this;       
+            $this->setMessage($this->_getReqAttr($this->_addAttributes));
+            return $this;
         }
-        
-        $model      = $this->_getModel();        
-        $default    = array(
-            'type_id'           => Mage_Catalog_Model_Product_Type::TYPE_SIMPLE,
-            'attribute_set_id'  => 4,
-            'tax_class_id'      => 2,
-            'price'             => '0.00',
-            'websites'          => array(
+
+        $model = $this->_getModel();
+        $default = array(
+            'type_id' => Mage_Catalog_Model_Product_Type::TYPE_SIMPLE,
+            'attribute_set_id' => 4,
+            'tax_class_id' => 2,
+            'price' => '0.00',
+            'websites' => array(
                 'base',
             ),
-            'status'            => Mage_Catalog_Model_Product_Status::STATUS_ENABLED,
+            'status' => Mage_Catalog_Model_Product_Status::STATUS_ENABLED,
         );
-                
+
         $model->addData(
-            array_merge($default, $data)
+                array_merge($default, $data)
         );
-        
+
         $model->save();
-        
-        $this->setMessage('Product created: ' . $model->getId());        
-        
+
+        $this->setMessage('Product created: ' . $model->getId());
+
         return $this;
     }
 
@@ -195,12 +195,6 @@ class MageHack_MageConsole_Model_Request_Catalog_Product extends MageHack_MageCo
      * Help command
      *
      * @return MageHack_MageConsole_Model_Abstract
-     */
-
-    /**
-     * Help command
-     *
-     * @return MageHack_MageConsole_Model_Abstract
      *
      */
     public function help() {
@@ -211,7 +205,6 @@ list product where <attribute> <op> value
 show product where <attribute> <op> value
 remove product where <attribute> <op> value
 add product
-update product <attribute> <op> value
 
 <attribute>
 sku,name,short_description,

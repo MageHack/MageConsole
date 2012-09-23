@@ -1,13 +1,11 @@
 <?php
+
 /**
  * @category    MageHack
  * @package     MageHack_MageConsole
  * @license     http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
-class MageHack_MageConsole_Model_Request_Catalog_Category
-    extends MageHack_MageConsole_Model_Abstract
-    implements MageHack_MageConsole_Model_Request_Interface
-{
+class MageHack_MageConsole_Model_Request_Catalog_Category extends MageHack_MageConsole_Model_Abstract implements MageHack_MageConsole_Model_Request_Interface {
 
     /**
      * Columns
@@ -15,19 +13,18 @@ class MageHack_MageConsole_Model_Request_Catalog_Category
      * @var     array
      */
     protected $_columns = array(
-        'entity_id'     => 12,
-        'name'          => 40,
-        'is_active'     => 12,
-        'display_mode'  => 15,
+        'entity_id' => 12,
+        'name' => 40,
+        'is_active' => 12,
+        'display_mode' => 15,
     );
-    
+
     /**
      * Get instance of Customer model
      *
      * @return  Mage_Customer_Model_Customer
      */
-    protected function _getModel()
-    {
+    protected function _getModel() {
         return Mage::getModel('catalog/category');
     }
 
@@ -36,8 +33,7 @@ class MageHack_MageConsole_Model_Request_Catalog_Category
      *
      * @return  MageHack_MageConsole_Model_Abstract
      */
-    public function add()
-    {
+    public function add() {
         $this->setType(self::RESPONSE_TYPE_MESSAGE);
         $this->setMessage('This action is not available');
         return $this;
@@ -48,8 +44,7 @@ class MageHack_MageConsole_Model_Request_Catalog_Category
      *
      * @return  MageHack_MageConsole_Model_Abstract
      */
-    public function update()
-    {
+    public function update() {
         $this->setType(self::RESPONSE_TYPE_MESSAGE);
         $this->setMessage('This action is not available');
         return $this;
@@ -60,16 +55,15 @@ class MageHack_MageConsole_Model_Request_Catalog_Category
      *
      * @return  MageHack_MageConsole_Model_Abstract
      */
-    public function remove()
-    {
+    public function remove() {
         $collection = $this->_getMatchedResults();
 
         if (!$collection->count()) {
-            $message    = 'No match found';
+            $message = 'No match found';
         } else if ($collection->count() > 1) {
-            $message    = 'Multiple matches found, please use the list command';
+            $message = 'Multiple matches found, please use the list command';
         } else {
-            $category    = $collection->getFirstItem();
+            $category = $collection->getFirstItem();
             try {
                 $name = $category->getName();
                 $id = $category->getId();
@@ -90,16 +84,15 @@ class MageHack_MageConsole_Model_Request_Catalog_Category
      *
      * @return  MageHack_MageConsole_Model_Abstract
      */
-    public function show()
-    {
+    public function show() {
         $collection = $this->_getMatchedResults();
 
         if (!$collection->count()) {
-            $message    = 'No match found';
+            $message = 'No match found';
         } else if ($collection->count() > 1) {
-            $message    = 'Multiple matches found, please use the list command';
+            $message = 'Multiple matches found, please use the list command';
         } else {
-            $category    = $collection->getFirstItem();
+            $category = $collection->getFirstItem();
             $details = $category->getData();
             $message = array();
             foreach ($details as $key => $info) {
@@ -118,8 +111,7 @@ class MageHack_MageConsole_Model_Request_Catalog_Category
      *
      * @return  MageHack_MageConsole_Model_Abstract
      */
-    public function listing()
-    {
+    public function listing() {
         $collection = $this->_getMatchedResults();
 
         foreach ($this->_columns as $attr => $width) {
@@ -132,11 +124,11 @@ class MageHack_MageConsole_Model_Request_Catalog_Category
             $values = $collection->toArray();
             foreach ($values as $row) {
                 $value = array();
-                
+
                 foreach ($this->_columns as $attr => $width) {
                     $value[$attr] = $row[$attr];
                 }
-                
+
                 $_values[] = $value;
             }
             $message = Mage::helper('mageconsole')->createTable($_values, true, array('columnWidths' => array_values($this->_columns)));
@@ -154,10 +146,26 @@ class MageHack_MageConsole_Model_Request_Catalog_Category
      * @return MageHack_MageConsole_Model_Abstract
      *
      */
-    public function help()
-    {
+    public function help() {
+        $message = <<<USAGE
+Usage: 
+list category where <attribute> <op> value
+show category where <attribute> <op> value
+remove category where <attribute> <op> value
+
+<attribute>
+name, entity_id,is_active,display_mode
+</attribute>
+
+<op>
+=,<,<=,>,>=,eq,neq,like,in,nin,notnull,
+null,moreq,gt,lt,gteq,lteq,finset,regexp,seq,sneq
+</op>
+
+USAGE;
         $this->setType(self::RESPONSE_TYPE_MESSAGE);
-        $this->setMessage('help was requested for a product - this is the help message');
-        return $this;
+        $this->setMessage($message);
+        return $message;
     }
+
 }

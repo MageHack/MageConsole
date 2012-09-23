@@ -124,19 +124,22 @@ class MageHack_MageConsole_Model_Autocomplete extends MageHack_MageConsole_Model
         }
         
         /* Flat */
-        if (!count($attributes)) {
-            $model  = Mage::getResourceModel($this->_models[$entityType]);
-            $table  = $model->getMainTable();
-            
-            $connection = Mage::getSingleton('core/resource')->getConnection('core_read');
-            $attributes = array_keys($connection->describeTable('sales_flat_order'));            
-            
-            foreach ($attributes as $attribute) {
-                if (preg_match('/^' . $attributePart .'.+/', $attribute)) {
-                    $autocomplete[] = $attribute;
-                }
-            }            
+        $model = Mage::getResourceModel($this->_models[$entityType]);
+        
+        if ($model instanceof Mage_Eav_Model_Entity_Abstract) {
+            $table = $model->getEntityTable();              
+        } else {
+            $table = $model->getMainTable();                                
         }
+        
+        $connection = Mage::getSingleton('core/resource')->getConnection('core_read');
+        $attributes = array_keys($connection->describeTable('sales_flat_order'));            
+        
+        foreach ($attributes as $attribute) {
+            if (preg_match('/^' . $attributePart .'.+/', $attribute)) {
+                $autocomplete[] = $attribute;
+            }
+        }            
                 
         return implode(' ', $autocomplete);         
     }

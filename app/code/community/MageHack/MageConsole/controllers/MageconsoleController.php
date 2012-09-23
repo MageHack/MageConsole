@@ -51,7 +51,7 @@ class MageHack_MageConsole_MageconsoleController extends Mage_Adminhtml_Controll
     /**
      * Save prompt data
      *
-     * @param   array   $data
+     * @param   string  $data
      * @return  string
      */
     protected function _savePrompt($data)
@@ -145,12 +145,7 @@ class MageHack_MageConsole_MageconsoleController extends Mage_Adminhtml_Controll
             $response->setType($request->getType());
             
             if ($request->getType() == MageHack_MageConsole_Model_Abstract::RESPONSE_TYPE_PROMPT) {
-                $key = $this->_savePrompt(
-                    array(
-                        'entity'    => $request->getEntity(),
-                        'action'    => $request->getAction(),
-                    )
-                );
+                $key = $this->_savePrompt($params['request']);
                                 
                 $response->setKey($key);
             }
@@ -185,11 +180,10 @@ class MageHack_MageConsole_MageconsoleController extends Mage_Adminhtml_Controll
                 Mage::throwException('Session time out, try again');                
             }            
                         
-            $request = $this->_getPromptModel()
-                ->setPrompt($prompt)
-                ->setAddData($data)
-                ->addEntity();            
-            
+            $request = $this->_getRequestModel()
+                ->setRequest($prompt)
+                ->dispatch($data);
+                                                    
             $response->setStatus('OK');
             $response->setMessage($request->getMessage());
             $response->setType(MageHack_MageConsole_Model_Abstract::RESPONSE_TYPE_MESSAGE);

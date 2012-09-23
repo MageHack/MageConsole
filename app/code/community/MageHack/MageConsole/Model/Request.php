@@ -115,7 +115,7 @@ class MageHack_MageConsole_Model_Request extends MageHack_MageConsole_Model_Abst
      * @throws  Mage_Core_Exception
      * @return  array
      */
-    public function dispatch() {
+    public function dispatch($data = null) {
         if (!$actionName = $this->getActionMapping($this->getAction())) {
             Mage::throwException('Invalid action: ' . $this->getAction());
         }
@@ -130,7 +130,12 @@ class MageHack_MageConsole_Model_Request extends MageHack_MageConsole_Model_Abst
 
         $entityModel->setRequest($this->getRequest());
         $this->setEntityModel($entityModel);
-        call_user_func(array($entityModel, $actionName));
+        
+        if (is_null($data)) {
+            call_user_func(array($entityModel, $actionName));            
+        } else {
+            call_user_func(array($entityModel, $actionName), $data);                        
+        } 
 
         return $this->getEntityModel();
     }

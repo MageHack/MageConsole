@@ -52,9 +52,33 @@ class MageHack_MageConsole_Model_Request_Catalog_Product
      *
      * @return  MageHack_MageConsole_Model_Abstract
      */
-    public function add() {
-        $this->setType(self::RESPONSE_TYPE_PROMPT);
-        $this->setMessage($this->_getReqAttr($this->_addAttributes));
+    public function add($data = null) {
+        if (is_null($data)) {
+            $this->setType(self::RESPONSE_TYPE_PROMPT);
+            $this->setMessage($this->_getReqAttr($this->_addAttributes));     
+            return $this;       
+        }
+        
+        $model      = $this->_getModel();        
+        $default    = array(
+            'type_id'           => Mage_Catalog_Model_Product_Type::TYPE_SIMPLE,
+            'attribute_set_id'  => 4,
+            'tax_class_id'      => 2,
+            'price'             => '0.00',
+            'websites'          => array(
+                'base',
+            ),
+            'status'            => Mage_Catalog_Model_Product_Status::STATUS_ENABLED,
+        );
+                
+        $model->addData(
+            array_merge($default, $data)
+        );
+        
+        $model->save();
+        
+        $this->setMessage('Product created: ' . $model->getId());        
+        
         return $this;
     }
 

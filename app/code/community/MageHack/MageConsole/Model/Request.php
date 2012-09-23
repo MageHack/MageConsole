@@ -40,7 +40,6 @@ class MageHack_MageConsole_Model_Request extends MageHack_MageConsole_Model_Abst
         'add'       => 'add',
         'update'    => 'update',
         'remove'    => 'remove',
-        'delete'    => 'delete',
         'show'      => 'show',
         'list'      => 'listing',
         'help'      => 'help',

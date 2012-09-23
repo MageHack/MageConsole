@@ -7,10 +7,6 @@
 class MageHack_MageConsole_Model_Autocomplete extends MageHack_MageConsole_Model_Abstract
 {
 
-    protected $_commands = array(
-        'add','create','update','modify','list','ls','delete','remove','del','read','display','help',
-    );
-
     /**
      * Entity mapping
      *
@@ -63,7 +59,7 @@ class MageHack_MageConsole_Model_Autocomplete extends MageHack_MageConsole_Model
     {
         $autocomplete   = array();
 
-        foreach ($this->_commands as $command) {
+        foreach (array_keys($this->_getRequestModel()->getActionMapping()) as $command) {
             if (preg_match('/^' . $commandPart .'.+/', $command) || $commandPart == $command) {
                 $autocomplete[] = $command;
             }

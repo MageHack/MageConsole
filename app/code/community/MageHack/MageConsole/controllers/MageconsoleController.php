@@ -147,7 +147,7 @@ class MageHack_MageConsole_MageconsoleController extends Mage_Adminhtml_Controll
             if ($request->getType() == MageHack_MageConsole_Model_Abstract::RESPONSE_TYPE_PROMPT) {
                 $key = $this->_savePrompt($params['request']);
                                 
-                $response->setKey($key);
+                $response->setId($key);
             }
         } catch (Exception $e) {
             $response->setStatus('ERROR');
@@ -169,7 +169,7 @@ class MageHack_MageConsole_MageconsoleController extends Mage_Adminhtml_Controll
         $response   = new Varien_Object();
 
         try {
-            $key    = $params['key'];
+            $key    = $params['id'];
             $data   = $params['data'];
             
             if (empty($key) || empty($data)) {

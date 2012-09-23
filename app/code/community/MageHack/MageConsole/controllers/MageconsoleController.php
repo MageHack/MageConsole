@@ -7,6 +7,7 @@
 class MageHack_MageConsole_MageconsoleController extends Mage_Adminhtml_Controller_Action
 {
     
+    
     /**
      * Retrieve MageConsole helper
      *
@@ -36,6 +37,65 @@ class MageHack_MageConsole_MageconsoleController extends Mage_Adminhtml_Controll
     {
         return Mage::getModel('mageconsole/request');
     }
+
+    /**
+     * Retrieve prompt model
+     *
+     * @return  MageHack_MageConsole_Model_Prompt
+     */
+    protected function _getPromptModel()
+    {
+        return Mage::getModel('mageconsole/prompt');
+    }
+    
+    /**
+     * Save prompt data
+     *
+     * @param   array   $data
+     * @return  string
+     */
+    protected function _savePrompt($data)
+    {
+        $prompts = $this->_getSession()->getMageConsolePrompts();
+        
+        if (!is_array($prompts)) {
+            $prompts = array();
+        }
+        
+        $key            = sha1(serialize($data) . time());    
+        $prompts[$key]  = $data;
+        
+        $this->_getSession()->setMageConsolePrompts($prompts);
+        
+        $prompts = $this->_getSession()->getMageConsolePrompts();
+        
+        return $key;
+    }
+    
+    /**
+     * Load prompt data
+     *
+     * @param   string  $key
+     * @return  boolean|string
+     */
+    protected function _loadPrompt($key)
+    {
+        $prompt     = false;
+        $prompts    = $this->_getSession()->getMageConsolePrompts();
+        
+        if (!is_array($prompts)) {
+            $prompts = array();
+        }
+        
+        if (array_key_exists($key, $prompts)) {
+            $this->_getSession()->setMageConsolePrompts($prompts);
+            
+            $prompt = $prompts[$key];
+            unset($prompts[$key]);            
+        }
+
+        return $prompt;
+    }    
     
     /**
      * Autocomplete request
@@ -85,7 +145,14 @@ class MageHack_MageConsole_MageconsoleController extends Mage_Adminhtml_Controll
             $response->setType($request->getType());
             
             if ($request->getType() == MageHack_MageConsole_Model_Abstract::RESPONSE_TYPE_PROMPT) {
-                $response->setKey(time());
+                $key = $this->_savePrompt(
+                    array(
+                        'entity'    => $request->getEntity(),
+                        'action'    => $request->getAction(),
+                    )
+                );
+                                
+                $response->setKey($key);
             }
         } catch (Exception $e) {
             $response->setStatus('ERROR');
@@ -103,7 +170,6 @@ class MageHack_MageConsole_MageconsoleController extends Mage_Adminhtml_Controll
      */
     public function promptAction()
     {
-
         $params     = $this->getRequest()->getParams();
         $response   = new Varien_Object();
 
@@ -115,8 +181,17 @@ class MageHack_MageConsole_MageconsoleController extends Mage_Adminhtml_Controll
                 Mage::throwException('Parameters key and data are required');
             }            
             
+            if (!$prompt = $this->_loadPrompt($key)) {
+                Mage::throwException('Session time out, try again');                
+            }            
+                        
+            $request = $this->_getPromptModel()
+                ->setPrompt($prompt)
+                ->setAddData($data)
+                ->addEntity();            
+            
             $response->setStatus('OK');
-            $response->setMessage('OK');
+            $response->setMessage($request->getMessage());
             $response->setType(MageHack_MageConsole_Model_Abstract::RESPONSE_TYPE_MESSAGE);
         } catch (Exception $e) {
             $response->setStatus('ERROR');

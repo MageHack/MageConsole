@@ -10,6 +10,22 @@ class MageHack_MageConsole_Model_Request_Catalog_Product
 {
 
     /**
+     * Product creation attributes
+     *
+     * @var     array
+     */
+    protected $_addAttributes = array(
+        'sku',
+        'name',
+        'short_description',
+        'description',
+        'enabled',
+        'visibility',
+        'price',
+        'tax_class_id',
+    );
+
+    /**
      * Columns
      *
      * @var     array
@@ -38,7 +54,7 @@ class MageHack_MageConsole_Model_Request_Catalog_Product
      */
     public function add() {
         $this->setType(self::RESPONSE_TYPE_PROMPT);
-        $this->setMessage($this->_getReqAttr());
+        $this->setMessage($this->_getReqAttr($this->_addAttributes));
         return $this;
     }
 
@@ -48,7 +64,9 @@ class MageHack_MageConsole_Model_Request_Catalog_Product
      * @return  MageHack_MageConsole_Model_Abstract
      */
     public function update() {
-        
+        $this->setType(self::RESPONSE_TYPE_MESSAGE);
+        $this->setMessage('This action is not available');
+        return $this;        
     }
 
     /**
@@ -57,7 +75,23 @@ class MageHack_MageConsole_Model_Request_Catalog_Product
      * @return  MageHack_MageConsole_Model_Abstract
      */
     public function remove() {
-        
+        $collection = $this->_getMatchedResults();
+
+        if (!$collection->count()) {
+            $message    = 'No match found';
+        } else if ($collection->count() > 1) {
+            $message    = 'Multiple matches found, please use the list command';
+        } else {
+            $product    = $collection->getFirstItem();
+            $name       = $product->getName();
+            $id         = $product->getId();
+            $product->delete();
+            $message = sprintf('Product: %s (%s) deleted.', $name, $id);
+        }
+
+        $this->setType(self::RESPONSE_TYPE_MESSAGE);
+        $this->setMessage($message);
+        return $this;        
     }
 
     /**
@@ -145,5 +179,4 @@ class MageHack_MageConsole_Model_Request_Catalog_Product
         $this->setMessage('help was requested for a product - this is the help message');
         return $this;
     }
-
 }

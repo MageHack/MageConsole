@@ -38,9 +38,9 @@ class MageHack_MageConsole_Model_Request_Customer
      */
     public function add()
     {
-        $this->setType(self::RESPONSE_TYPE_PROMPT);
-        $this->setMessage($this->_getReqAttr());
-        return $this;
+        $this->setType(self::RESPONSE_TYPE_MESSAGE);
+        $this->setMessage('This action is not available');
+        return $this;        
     }
 
     /**
@@ -50,7 +50,9 @@ class MageHack_MageConsole_Model_Request_Customer
      */
     public function update()
     {
-
+        $this->setType(self::RESPONSE_TYPE_MESSAGE);
+        $this->setMessage('This action is not available');
+        return $this;        
     }
 
     /**

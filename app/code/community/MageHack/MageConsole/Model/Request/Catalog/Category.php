@@ -38,7 +38,9 @@ class MageHack_MageConsole_Model_Request_Catalog_Category
      */
     public function add()
     {
-
+        $this->setType(self::RESPONSE_TYPE_MESSAGE);
+        $this->setMessage('This action is not available');
+        return $this;
     }
 
     /**
@@ -48,7 +50,9 @@ class MageHack_MageConsole_Model_Request_Catalog_Category
      */
     public function update()
     {
-
+        $this->setType(self::RESPONSE_TYPE_MESSAGE);
+        $this->setMessage('This action is not available');
+        return $this;
     }
 
     /**

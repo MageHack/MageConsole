@@ -21,6 +21,38 @@ abstract class MageHack_MageConsole_Model_Abstract
     const WHERE = 'where';
 
     /**
+     * Entity mapping
+     *
+     * @var  array
+     */
+    protected $_entities = array(
+        'customer'      => 'customer',
+        'address'       => 'customer_address',
+        'category'      => 'catalog_category',
+        'product'       => 'catalog_product',
+        'order'         => 'order',
+        'invoice'       => 'invoice',
+        'creditmemo'    => 'creditmemo',
+        'shipment'      => 'shipment',
+    );
+
+    /**
+     * Model mapping
+     *
+     * @var  array
+     */
+    protected $_models = array(
+        'customer'          => 'customer/customer',
+        'customer_address'  => 'customer/address',
+        'catalog_category'  => 'catalog/category',
+        'catalog_product'   => 'catalog/product',
+        'order'             => 'sales/order',
+        'invoice'           => 'sales/order_invoice',
+        'creditmemo'        => 'sales/order_creditmemo',
+        'shipment'          => 'sales/order_shipment',
+    );
+
+    /**
      * Operators
      *
      * @var     array
@@ -252,7 +284,7 @@ abstract class MageHack_MageConsole_Model_Abstract
      *
      * @return  array
      */
-    protected function _getReqAttr() {
+    protected function _getReqAttr($filters = array()) {
         $ret = array();
         $attributes = $this->_getModel()->getAttributes();
         foreach ($attributes as $a) {
@@ -260,8 +292,20 @@ abstract class MageHack_MageConsole_Model_Abstract
             if ($a->getData('frontend_input') == 'hidden' || !$a->getData('frontend_label')) continue;
             $ret[$a->getAttributeCode()] = array('label' => $a->getData('frontend_label'), 'values'=>$values);
         }
+        
+        if (empty($filters)) {
+            return $ret;
+        }
+        
+        $filtered = array();
+        
+        foreach ($filters as $filter) {
+            if (array_key_exists($filter, $ret)) {
+                $filtered[$filter] = $ret[$filter];
+            }
+        }
 
-        return $ret;
+        return $filtered;
     }
     
     /*

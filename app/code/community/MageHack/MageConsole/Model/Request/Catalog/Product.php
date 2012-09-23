@@ -7,7 +7,10 @@
  */
 class MageHack_MageConsole_Model_Request_Product extends MageHack_MageConsole_Model_Abstract implements MageHack_MageConsole_Model_Request_Interface {
 
-    protected $_attrToShow = array('name' => 'name', 'sku' => 'sku');
+    protected $_attrToShow = array('name' => 'name', 'sku' => 'sku', 'status' => 'status');
+    protected $_columnWidths = array(
+        'columnWidths' => array(12, 40, 4)
+    );
 
     /**
      * Get instance of product model
@@ -24,7 +27,6 @@ class MageHack_MageConsole_Model_Request_Product extends MageHack_MageConsole_Mo
      * @return  MageHack_MageConsole_Model_Abstract
      */
     public function add() {
-       // var_dump('called');
         $this->setType(self::RESPONSE_TYPE_PROMPT);
         $this->setMessage($this->getReqAttr());
 
@@ -55,27 +57,41 @@ class MageHack_MageConsole_Model_Request_Product extends MageHack_MageConsole_Mo
      * @return  MageHack_MageConsole_Model_Abstract
      */
     public function show() {
-        $collection = $this->_getModel()
-                ->getCollection()
-                ->addAttributeToSelect('*');
-
-        foreach ($this->getConditions() as $condition) {
-            $collection->addFieldToFilter($condition['attribute'], array($condition['operator'] => $condition['value']));
-        }
-
+        $_collection = $this->_getModel()
+                ->getCollection();
+        $collection = $this->_prepareCollection($_collection);
         if (!$collection->count()) {
             $message = 'No match found';
         } else if ($collection->count() > 1) {
             $message = 'Multiple matches found, use the list command';
         } else {
             $product = $collection->getFirstItem();
-            $message = sprintf('Name: %s', $product->getName());
+            $details = $product->getData();
+            $message = array();
+            foreach ($details as $key => $info) {
+                $message[] = sprintf('%s: %s', $key, $info);
+            }
         }
-
         $this->setType(self::RESPONSE_TYPE_MESSAGE);
         $this->setMessage($message);
 
         return $this;
+    }
+
+    /**
+     * 
+     * @param Mage_Catalog_Model_Resource_Product_Collection $collection
+     * @return Mage_Catalog_Model_Resource_Product_Collection
+     */
+    protected function _prepareCollection(Mage_Catalog_Model_Resource_Product_Collection $collection) {
+
+        foreach ($this->getConditions() as $condition) {
+            $collection->addFieldToFilter($condition['attribute'], array($condition['operator'] => $condition['value']));
+        }
+        foreach ($this->_attrToShow as $attr) {
+            $collection->addAttributeToSelect($attr);
+        }
+        return $collection;
     }
 
     /**
@@ -84,14 +100,9 @@ class MageHack_MageConsole_Model_Request_Product extends MageHack_MageConsole_Mo
      * @return  MageHack_MageConsole_Model_Abstract
      */
     public function listing() {
-        $collection = $this->_getModel()
+        $_collection = $this->_getModel()
                 ->getCollection();
-        foreach ($this->getConditions() as $condition) {
-            $collection->addFieldToFilter($condition['attribute'], array($condition['operator'] => $condition['value']));
-        }
-        foreach ($this->_attrToShow as $attr) {
-            $collection->addAttributeToSelect($attr);
-        }
+        $collection = $this->_prepareCollection($_collection);
 
         if (!$collection->count()) {
             $message = 'No match found';
@@ -100,17 +111,13 @@ class MageHack_MageConsole_Model_Request_Product extends MageHack_MageConsole_Mo
             foreach ($values as $row) {
                 $_values[] = (array_intersect_key($row, $this->_attrToShow));
             }
-            $message = Mage::helper('mageconsole')->createTable($_values);
+            $message = Mage::helper('mageconsole')->createTable($_values, true, $this->_columnWidths);
         }
 
         $this->setType(self::RESPONSE_TYPE_MESSAGE);
         $this->setMessage($message);
 
         return $this;
-    }
-
-    protected function _reduceArray($val) {
-        return (in_array($val, $this->_attrToShow));
     }
 
     /**

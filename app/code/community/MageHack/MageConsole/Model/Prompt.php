@@ -85,6 +85,7 @@ class MageHack_MageConsole_Model_Prompt extends MageHack_MageConsole_Model_Abstr
             'websites'          => array(
                 'base',
             ),
+            'status'            => Mage_Catalog_Model_Product_Status::STATUS_ENABLED,
         );
                 
         $model->addData(

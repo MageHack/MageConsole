@@ -39,7 +39,6 @@ class MageHack_MageConsole_Model_Request_Catalog_Product
     public function add() {
         $this->setType(self::RESPONSE_TYPE_PROMPT);
         $this->setMessage($this->_getReqAttr());
-
         return $this;
     }
 
@@ -147,20 +146,4 @@ class MageHack_MageConsole_Model_Request_Catalog_Product
         return $this;
     }
 
-    /**
-     * Get all required attributes of the product entity
-     * 
-     * @return  array
-     */
-    protected function _getReqAttr() {
-        $ret = array();
-        $attributes = Mage::getModel('catalog/product')->getAttributes();
-        foreach ($attributes as $a) {
-            $values = $a->getSource()->getAllOptions(false);
-            if ($a->getData('frontend_input') == 'hidden' || !$a->getData('frontend_label')) continue;
-            $ret[$a->getAttributeCode()] = array('label' => $a->getData('frontend_label'), 'values'=>$values);
-        }
-
-        return $ret;
-    }
 }

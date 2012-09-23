@@ -39,7 +39,7 @@ class MageHack_MageConsole_Model_Request_Customer
     public function add()
     {
         $this->setType(self::RESPONSE_TYPE_PROMPT);
-        $this->setMessage(array('Hello', 'World'));
+        $this->setMessage($this->_getReqAttr());
         return $this;
     }
 

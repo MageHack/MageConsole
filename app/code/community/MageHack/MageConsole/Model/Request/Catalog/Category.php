@@ -46,7 +46,27 @@ class MageHack_MageConsole_Model_Request_Catalog_Category
      */
     public function remove()
     {
+        $collection = $this->_getMatchedResults();
 
+        if (!$collection->count()) {
+            $message    = 'No match found';
+        } else if ($collection->count() > 1) {
+            $message    = 'Multiple matches found, please use the list command';
+        } else {
+            $category    = $collection->getFirstItem();
+            try {
+                $name = $category->getName();
+                $id = $category->getId();
+                $category->delete();
+                $message = sprintf('Category: %s (%s) deleted.', $name, $id);
+            } catch (Exception $e) {
+                $message = $e->getMessage();
+            }
+        }
+
+        $this->setType(self::RESPONSE_TYPE_MESSAGE);
+        $this->setMessage($message);
+        return $this;
     }
 
     /**

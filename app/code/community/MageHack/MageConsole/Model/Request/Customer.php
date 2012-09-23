@@ -9,15 +9,16 @@ class MageHack_MageConsole_Model_Request_Customer
     implements MageHack_MageConsole_Model_Request_Interface
 {
 
-    protected $_attrToShow = array(
-        'entity_id' => 'entity_id',
-        'email' => 'email',
-        'firstname' => 'firstname',
-        'lastname' => 'lastname'
-    );
-
-    protected $_columnWidths = array(
-        'columnWidths' => array(12, 40, 20, 20)
+    /**
+     * Columns
+     *
+     * @var     array
+     */
+    protected $_columns = array(
+        'entity_id'     => 12,
+        'firstname'     => 20,
+        'lastname'      => 20,
+        'email'         => 40,
     );
 
     /**
@@ -118,7 +119,7 @@ class MageHack_MageConsole_Model_Request_Customer
     {
         $collection = $this->_getMatchedResults();
 
-        foreach ($this->_attrToShow as $attr) {
+        foreach ($this->_columns as $attr => $width) {
             $collection->addAttributeToSelect($attr);
         }
 
@@ -129,10 +130,16 @@ class MageHack_MageConsole_Model_Request_Customer
             if (is_array($values)) {
                 foreach ($values as $row) {
                     if (is_array($row)) {
-                        $_values[] = (array_intersect_key($row, $this->_attrToShow));
+                        $value = array();
+
+                        foreach ($this->_columns as $attr => $width) {
+                            $value[$attr] = $row[$attr];
+                        }
+
+                        $_values[] = $value;
                     }
                 }
-                $message = Mage::helper('mageconsole')->createTable($_values, true, $this->_columnWidths);
+                $message = Mage::helper('mageconsole')->createTable($_values, true, array('columnWidths' => array_values($this->_columns)));
             }
         }
 

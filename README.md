@@ -2,7 +2,7 @@
 
 A handy developer tool to perform tasks efficiently using a terminal type application within the admin panel.
 
-<img src="http://f.cl.ly/items/1K240T113E2m2X1V1H3b/Screen%20Shot%202012-09-23%20at%2015.45.19.png" width="800" height="642"/>
+<img src="http://f.cl.ly/items/2k0m1k1r2P3I2x0B0C08/Screen%20Shot%202012-09-23%20at%2017.24.28.png" width="800" height="556"/>
 
 The Terminal can be started by using CTRL + SHIFT + M, once it is enabled in the System > Configuration > Admin
 

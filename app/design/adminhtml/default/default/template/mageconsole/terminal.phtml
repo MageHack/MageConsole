@@ -18,6 +18,7 @@
         mcwizard = new Array();
         mcterm = $('#terminal').terminal(function(cmd, term) {
             if (cmd !== '') {
+                if (cmd == 'exit') { jt_stop(); return false; }
                 term.pause();
                 jQuery('#terminalCmd').val(cmd);
                 try {
@@ -69,6 +70,7 @@
         }, {
             greetings: 'Magento Console',
             name: 'mageconsole',
+            exit: false,
             height: 200,
             tabcompletion: true,
             prompt: '[[b;#fff;#000]Mage>] ',
@@ -82,12 +84,15 @@
                 } else if (e.which == 68 && e.ctrlKey) { // ctrl-d
                     e.preventDefault();
                     if (mcwizard.actkey) jt_send();
+                    else {
+                        if (mcterm.get_command() == '') { jt_stop(); return false; }
+                    }
 //                    console.log('save');
                     // TODO save()
                     return false;
                 } else if (e.which == 77 && (e.ctrlKey) && (e.shiftKey)) { // shift-ctrl-m
                     e.preventDefault();
-                    jQuery('#terminal').hide();
+                    jt_stop();
                     return false;
                 } else if (e.which == 9) { // tab completion
                     if (mcwizard.actkey !== undefined) return false;
@@ -121,6 +126,7 @@
         if (e.which == 77 && e.ctrlKey && mcterm.css('display')=='none') {
             jQuery('#terminal').show();
             mcterm.enable();
+            mcterm.resume();
             jQuery("html, body").animate({ scrollTop: jQuery(document).height() }, "slow");
             e.preventDefault();
             // TODO we have to check this why we have to throw this, it's OK for the demo
@@ -131,23 +137,30 @@
 
     function jt_send () {
         mcterm.pause();
+        if (mcwizard.storedData.length < 1) { mcterm.pop(); mcterm.resume(); return false; }
         jQuery.ajax({
             type: "POST",
             data: {form_key: jQuery('#terminalForm input[name=form_key]').val(), key: mcwizard.formkey, data: mcwizard.storedData },
             dataType: 'json',
             url: "<?php echo $this->getPromptUrl(); ?>",
         }).done(function (response) {
-                mcterm.echo("Product is saved");
+                mcterm.echo(response.message);
                 mcterm.pop();
                 mcterm.resume();
             });
         delete mcwizard.actkey;
     }
 
+    function jt_stop() {
+        mcterm.pause();
+        mcterm.disable();
+        jQuery('#terminal').hide();
+    }
+
     function jt_prompt (cmd) {
         var oldkey = mcwizard.actkey;
         mcwizard.storedData[oldkey] = cmd;
-        console.log(mcwizard.mattrs);
+
         if(Object.keys(mcwizard.mattrs).length == 0) {
             jt_send();
             return false;

@@ -14,115 +14,122 @@
 <div id="terminal"></div>
 <script type="text/javascript">
     //<![CDATA[
-    jQuery(function($, undefined) {
-        mcwizard = new Array();
-        mcterm = $('#terminal').terminal(function(cmd, term) {
-            if (cmd !== '') {
-                if (cmd == 'exit') { jt_stop(); return false; }
-                term.pause();
-                jQuery('#terminalCmd').val(cmd);
-                try {
-                    $.ajax({
-                        type: "POST",
-                        data: $('#terminalForm').serialize(),
-                        dataType: 'json',
-                        url: "<?php echo $this->getSubmitUrl(); ?>",
-                    }).done(function (response) {
-                            if(response && response.status == 'OK') {
-                                switch (response.type)
-                                {
-                                    case "MESSAGE":
-                                        if( Object.prototype.toString.call(response.message) === '[object Array]' ) {
-                                            for (var i = 0; i < response.message.length; i++) {
-                                                term.echo(response.message[i] + '\n');
-                                            }
-                                        } else {
-                                            term.echo(response.message);
-                                        }
-                                        break;
-                                    case "LIST":
-                                        break;
-                                    case "PROMPT":
-                                        var key = '';
-                                        if(Object.keys(response.message).length == 0) break;
-                                        mcwizard.mattrs = response.message;
-                                        for (key in mcwizard.mattrs) break;
-                                        var attrdata = mcwizard.mattrs[key];
-                                        mcwizard.storedData  = new Object();
-                                        mcwizard.actkey = key;
-                                        mcwizard.formkey = response.key;
-                                        delete mcwizard.mattrs[key];
-                                        term.push(jt_prompt,{ prompt:'\t[[b;#eee;#000]'+attrdata['label']+':] ',name:key});
-                                        break;
-                                    case "ERROR":
-                                        term.error(new String(response.message));
-                                        break;
-                                }
-                            } else {
-                                term.error(new String(response.message));
-                            }
-                            term.resume();
-                        });
-                } catch(e) {
-                    term.error(new String(e));
-                }
-            }
-        }, {
-            greetings: 'Magento Console',
-            name: 'mageconsole',
-            exit: false,
-            height: 200,
-            tabcompletion: true,
-            prompt: '[[b;#fff;#000]Mage>] ',
-            keydown: function (e) {
-                if (e.which == 67 && e.ctrlKey) { // ctrl-c
-                    e.preventDefault();
-                    //alert('ctrl-c placeholder');
-                    mcterm.set_command('');
-                    if (mcwizard.actkey) { mcterm.pop(); delete mcwizard.actkey; }
-                    return false;
-                } else if (e.which == 68 && e.ctrlKey) { // ctrl-d
-                    e.preventDefault();
-                    if (mcwizard.actkey) jt_send();
-                    else {
-                        if (mcterm.get_command() == '') { jt_stop(); return false; }
-                    }
-//                    console.log('save');
-                    // TODO save()
-                    return false;
-                } else if (e.which == 77 && (e.ctrlKey) && (e.shiftKey)) { // shift-ctrl-m
-                    e.preventDefault();
-                    jt_stop();
-                    return false;
-                } else if (e.which == 9) { // tab completion
-                    if (mcwizard.actkey !== undefined) return false;
-                    var command = mcterm.get_command();
-                   // console.log(command);
-                        jQuery.ajax({
-                            type: "GET",
-                            dataType: 'json',
-                            url: "<?php echo $this->getAutocompleteUrl(); ?>request/"+encodeURIComponent(command),
-                        }).done(function (response) {
-                                if (response.message == '') return false;
-                                var ocwords = command.split(' ');
-                                ocwords.splice(-1);
-                                var cwords = response.message.split(' ');
-                                if (cwords.length === 1) {
-                                    if (ocwords.join(' ').length > 0)
-                                        mcterm.set_command(ocwords.join(' ')+' '+cwords[0]+' ');
-                                    else
-                                        mcterm.set_command(cwords[0]+' ');
-                                } else if (cwords.length > 1) {
-                                    mcterm.echo(cwords.join('\t'));
-                                }
-                            });
-                    return false;
-                }
-            }});
-    });
+
     //]]>
     jQuery(window).keydown(function (e){
         // TODO this checking is ugly (css instead of enabled)
+        if (e.which == 77 && e.ctrlKey && "undefined" === typeof mcterm) {
+            jQuery(function($, undefined) {
+                mcwizard = new Array();
+                mcterm = $('#terminal').terminal(function(cmd, term) {
+                    if (cmd !== '') {
+                        if (cmd == 'exit') { jt_stop(); return false; }
+                        term.pause();
+                        jQuery('#terminalCmd').val(cmd);
+                        try {
+                            $.ajax({
+                                type: "POST",
+                                data: $('#terminalForm').serialize(),
+                                dataType: 'json',
+                                url: "<?php echo $this->getSubmitUrl(); ?>",
+                            }).done(function (response) {
+                                    if(response && response.status == 'OK') {
+                                        switch (response.type)
+                                        {
+                                            case "MESSAGE":
+                                                if( Object.prototype.toString.call(response.message) === '[object Array]' ) {
+                                                    for (var i = 0; i < response.message.length; i++) {
+                                                        term.echo(response.message[i] + '\n');
+                                                    }
+                                                } else {
+                                                    term.echo(response.message);
+                                                }
+                                                break;
+                                            case "LIST":
+                                                break;
+                                            case "PROMPT":
+                                                var key = '';
+                                                if(Object.keys(response.message).length == 0) break;
+                                                mcwizard.mattrs = response.message;
+                                                for (key in mcwizard.mattrs) break;
+                                                var attrdata = mcwizard.mattrs[key];
+                                                mcwizard.storedData  = new Object();
+                                                mcwizard.actkey = key;
+                                                mcwizard.formkey = response.key;
+                                                delete mcwizard.mattrs[key];
+                                                term.push(jt_prompt,{ prompt:'\t[[b;#eee;#000]'+attrdata['label']+':] ',name:key});
+                                                break;
+                                            case "ERROR":
+                                                term.error(new String(response.message));
+                                                break;
+                                        }
+                                    } else {
+                                        term.error(new String(response.message));
+                                    }
+                                    term.resume();
+                                });
+                        } catch(e) {
+                            term.error(new String(e));
+                        }
+                    }
+                }, {
+                    greetings: 'Magento Console v. 0.1.0',
+                    name: 'mageconsole',
+                    exit: false,
+                    height: 200,
+                    tabcompletion: true,
+                    onInit: function () {
+                        jQuery("html, body").animate({ scrollTop: jQuery(document).height() }, "slow");
+                    },
+                    prompt: '[[b;#fff;#000]Mage>] ',
+                    keydown: function (e) {
+                        if (e.which == 67 && e.ctrlKey) { // ctrl-c
+                            e.preventDefault();
+                            //alert('ctrl-c placeholder');
+                            mcterm.set_command('');
+                            if (mcwizard.actkey) { mcterm.pop(); delete mcwizard.actkey; }
+                            return false;
+                        } else if (e.which == 68 && e.ctrlKey) { // ctrl-d
+                            e.preventDefault();
+                            if (mcwizard.actkey) jt_send();
+                            else {
+                                if (mcterm.get_command() == '') { jt_stop(); return false; }
+                            }
+//                    console.log('save');
+                            // TODO save()
+                            return false;
+                        } else if (e.which == 77 && (e.ctrlKey) && (e.shiftKey)) { // shift-ctrl-m
+                            e.preventDefault();
+                            jt_stop();
+                            return false;
+                        } else if (e.which == 9) { // tab completion
+                            if (mcwizard.actkey !== undefined) return false;
+                            var command = mcterm.get_command();
+                            // console.log(command);
+                            jQuery.ajax({
+                                type: "GET",
+                                dataType: 'json',
+                                url: "<?php echo $this->getAutocompleteUrl(); ?>request/"+encodeURIComponent(command),
+                            }).done(function (response) {
+                                    if (response.message == '') return false;
+                                    var ocwords = command.split(' ');
+                                    ocwords.splice(-1);
+                                    var cwords = response.message.split(' ');
+                                    if (cwords.length === 1) {
+                                        if (ocwords.join(' ').length > 0)
+                                            mcterm.set_command(ocwords.join(' ')+' '+cwords[0]+' ');
+                                        else
+                                            mcterm.set_command(cwords[0]+' ');
+                                    } else if (cwords.length > 1) {
+                                        mcterm.echo(cwords.join('\t'));
+                                    }
+                                });
+                            return false;
+                        }
+                    }});
+            });
+        }
+        else
         if (e.which == 77 && e.ctrlKey && mcterm.css('display')=='none') {
             jQuery('#terminal').show();
             mcterm.enable();

@@ -5,9 +5,7 @@
  * @package     MageHack_MageConsole
  * @license     http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
-class MageHack_MageConsole_Model_Request_Catalog_Product
-    extends MageHack_MageConsole_Model_Abstract implements MageHack_MageConsole_Model_Request_Interface
-{
+class MageHack_MageConsole_Model_Request_Catalog_Product extends MageHack_MageConsole_Model_Abstract implements MageHack_MageConsole_Model_Request_Interface {
 
     /**
      * Product creation attributes
@@ -31,11 +29,11 @@ class MageHack_MageConsole_Model_Request_Catalog_Product
      * @var     array
      */
     protected $_columns = array(
-        'sku'           => 20,
-        'name'          => 30,
-        'price'         => 8,
-        'visibility'    => 12,
-        'status'        => 8,
+        'sku' => 20,
+        'name' => 30,
+        'price' => 8,
+        'visibility' => 12,
+        'status' => 8,
     );
 
     /**
@@ -90,7 +88,7 @@ class MageHack_MageConsole_Model_Request_Catalog_Product
     public function update() {
         $this->setType(self::RESPONSE_TYPE_MESSAGE);
         $this->setMessage('This action is not available');
-        return $this;        
+        return $this;
     }
 
     /**
@@ -102,20 +100,20 @@ class MageHack_MageConsole_Model_Request_Catalog_Product
         $collection = $this->_getMatchedResults();
 
         if (!$collection->count()) {
-            $message    = 'No match found';
+            $message = 'No match found';
         } else if ($collection->count() > 1) {
-            $message    = 'Multiple matches found, please use the list command';
+            $message = 'Multiple matches found, please use the list command';
         } else {
-            $product    = $collection->getFirstItem();
-            $name       = $product->getName();
-            $id         = $product->getId();
+            $product = $collection->getFirstItem();
+            $name = $product->getName();
+            $id = $product->getId();
             $product->delete();
             $message = sprintf('Product: %s (%s) deleted.', $name, $id);
         }
 
         $this->setType(self::RESPONSE_TYPE_MESSAGE);
         $this->setMessage($message);
-        return $this;        
+        return $this;
     }
 
     /**
@@ -177,11 +175,11 @@ class MageHack_MageConsole_Model_Request_Catalog_Product
             $values = $collection->toArray();
             foreach ($values as $row) {
                 $value = array();
-                
+
                 foreach ($this->_columns as $attr => $width) {
                     $value[$attr] = $row[$attr];
                 }
-                
+
                 $_values[] = $value;
             }
             $message = Mage::helper('mageconsole')->createTable($_values, true, array('columnWidths' => array_values($this->_columns)));
@@ -198,9 +196,38 @@ class MageHack_MageConsole_Model_Request_Catalog_Product
      *
      * @return MageHack_MageConsole_Model_Abstract
      */
+
+    /**
+     * Help command
+     *
+     * @return MageHack_MageConsole_Model_Abstract
+     *
+     */
     public function help() {
+        $message = <<<USAGE
+   
+Usage: 
+list product where <attribute> <op> value
+show product where <attribute> <op> value
+remove product where <attribute> <op> value
+add product
+update product <attribute> <op> value
+
+<attribute>
+sku,name,short_description,
+description,enabled,visibility,
+price,tax_class_id
+</attribute>
+
+<op>
+=,<,<=,>,>=,eq,neq,like,in,nin,notnull,
+null,moreq,gt,lt,gteq,lteq,finset,regexp,seq,sneq
+</op>
+
+USAGE;
         $this->setType(self::RESPONSE_TYPE_MESSAGE);
-        $this->setMessage('help was requested for a product - this is the help message');
-        return $this;
+        $this->setMessage($message);
+        return $message;
     }
+
 }

@@ -55,7 +55,7 @@
                                                 var attrdata = mcwizard.mattrs[key];
                                                 mcwizard.storedData  = new Object();
                                                 mcwizard.actkey = key;
-                                                mcwizard.formkey = response.key;
+                                                mcwizard.formkey = response.id;
                                                 delete mcwizard.mattrs[key];
                                                 term.push(jt_prompt,{ prompt:'\t[[b;#eee;#000]'+attrdata['label']+':] ',name:key});
                                                 break;
@@ -147,7 +147,7 @@
         if (mcwizard.storedData.length < 1) { mcterm.pop(); mcterm.resume(); return false; }
         jQuery.ajax({
             type: "POST",
-            data: {form_key: jQuery('#terminalForm input[name=form_key]').val(), key: mcwizard.formkey, data: mcwizard.storedData },
+            data: {form_key: jQuery('#terminalForm input[name=form_key]').val(), id: mcwizard.formkey, data: mcwizard.storedData },
             dataType: 'json',
             url: "<?php echo $this->getPromptUrl(); ?>",
         }).done(function (response) {

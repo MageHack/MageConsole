@@ -5,11 +5,21 @@
  * @package     MageHack_MageConsole
  * @license     http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
-class MageHack_MageConsole_Model_Request_Product extends MageHack_MageConsole_Model_Abstract implements MageHack_MageConsole_Model_Request_Interface {
+class MageHack_MageConsole_Model_Request_Catalog_Product
+    extends MageHack_MageConsole_Model_Abstract implements MageHack_MageConsole_Model_Request_Interface
+{
 
-    protected $_attrToShow = array('name' => 'name', 'sku' => 'sku', 'status' => 'status');
-    protected $_columnWidths = array(
-        'columnWidths' => array(12, 40, 4)
+    /**
+     * Columns
+     *
+     * @var     array
+     */
+    protected $_columns = array(
+        'sku'           => 20,
+        'name'          => 30,
+        'price'         => 8,
+        'visibility'    => 12,
+        'status'        => 8,
     );
 
     /**
@@ -28,7 +38,7 @@ class MageHack_MageConsole_Model_Request_Product extends MageHack_MageConsole_Mo
      */
     public function add() {
         $this->setType(self::RESPONSE_TYPE_PROMPT);
-        $this->setMessage($this->getReqAttr());
+        $this->setMessage($this->_getReqAttr());
 
         return $this;
     }
@@ -80,15 +90,15 @@ class MageHack_MageConsole_Model_Request_Product extends MageHack_MageConsole_Mo
 
     /**
      * 
-     * @param Mage_Catalog_Model_Resource_Product_Collection $collection
-     * @return Mage_Catalog_Model_Resource_Product_Collection
+     * @param   Mage_Catalog_Model_Resource_Product_Collection $collection
+     * @return  Mage_Catalog_Model_Resource_Product_Collection
      */
     protected function _prepareCollection(Mage_Catalog_Model_Resource_Product_Collection $collection) {
 
         foreach ($this->getConditions() as $condition) {
             $collection->addFieldToFilter($condition['attribute'], array($condition['operator'] => $condition['value']));
         }
-        foreach ($this->_attrToShow as $attr) {
+        foreach ($this->_columns as $attr => $width) {
             $collection->addAttributeToSelect($attr);
         }
         return $collection;
@@ -109,9 +119,15 @@ class MageHack_MageConsole_Model_Request_Product extends MageHack_MageConsole_Mo
         } else if ($collection->count() > 0) {
             $values = $collection->toArray();
             foreach ($values as $row) {
-                $_values[] = (array_intersect_key($row, $this->_attrToShow));
+                $value = array();
+                
+                foreach ($this->_columns as $attr => $width) {
+                    $value[$attr] = $row[$attr];
+                }
+                
+                $_values[] = $value;
             }
-            $message = Mage::helper('mageconsole')->createTable($_values, true, $this->_columnWidths);
+            $message = Mage::helper('mageconsole')->createTable($_values, true, array('columnWidths' => array_values($this->_columns)));
         }
 
         $this->setType(self::RESPONSE_TYPE_MESSAGE);
@@ -124,7 +140,6 @@ class MageHack_MageConsole_Model_Request_Product extends MageHack_MageConsole_Mo
      * Help command
      *
      * @return MageHack_MageConsole_Model_Abstract
-     *
      */
     public function help() {
         $this->setType(self::RESPONSE_TYPE_MESSAGE);
@@ -134,9 +149,10 @@ class MageHack_MageConsole_Model_Request_Product extends MageHack_MageConsole_Mo
 
     /**
      * Get all required attributes of the product entity
-     * @return array
+     * 
+     * @return  array
      */
-    public function getReqAttr() {
+    protected function getReqAttr() {
         $ret = array();
         $attributes = Mage::getModel('catalog/product')->getAttributes();
         foreach ($attributes as $a) {
@@ -145,22 +161,6 @@ class MageHack_MageConsole_Model_Request_Product extends MageHack_MageConsole_Mo
             $ret[$a->getAttributeCode()] = array('label' => $a->getData('frontend_label'), 'values'=>$values);
         }
 
-//        $sql = "SELECT e.attribute_code, e.frontend_label, e.backend_type FROM `eav_attribute` as e WHERE entity_type_id IN(select eat.entity_type_id FROM eav_entity_type as eat where eat.entity_type_code = 'catalog_product') and e.is_required =1 and frontend_label is not null";
-//
-//        $connection = Mage::getSingleton('core/resource')->getConnection('core_read');
-//        $attributes = array();
-//        $_attributes = $connection->fetchAll($sql);
-//        if (count($_attributes) > 0) {
-//            foreach ($_attributes as $_attribute) {
-//                $attributes[$_attribute['attribute_code']] = array('label' => $_attribute['frontend_label'], 'type' => $_attribute['backend_type']);
-//            }
-//        }
         return $ret;
     }
-
-    protected function _getAddPrompt() {
-        $message = array_map(create_function('$val', 'return "Please enter $val :";'), array_values($this->getReqAttr()));
-        return $message;
-    }
-
 }

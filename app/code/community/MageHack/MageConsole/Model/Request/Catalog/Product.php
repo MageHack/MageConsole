@@ -152,7 +152,7 @@ class MageHack_MageConsole_Model_Request_Catalog_Product
      * 
      * @return  array
      */
-    protected function getReqAttr() {
+    protected function _getReqAttr() {
         $ret = array();
         $attributes = Mage::getModel('catalog/product')->getAttributes();
         foreach ($attributes as $a) {

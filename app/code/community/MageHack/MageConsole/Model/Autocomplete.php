@@ -6,7 +6,11 @@
  */
 class MageHack_MageConsole_Model_Autocomplete extends MageHack_MageConsole_Model_Abstract
 {
-    
+
+    protected $_commands = array(
+        'add','create','update','modify','list','ls','delete','remove','del','read','display','help',
+    );
+
     /**
      * Entity mapping
      *
@@ -48,7 +52,26 @@ class MageHack_MageConsole_Model_Autocomplete extends MageHack_MageConsole_Model
     {
         return Mage::getModel('mageconsole/request');
     }
-    
+
+    /**
+     * Auto complete command
+     *
+     * @param   string  $commandPart
+     * @return  string
+     */
+    protected function _completeCommand($commandPart)
+    {
+        $autocomplete   = array();
+
+        foreach ($this->_commands as $command) {
+            if (preg_match('/^' . $commandPart .'.+/', $command)) {
+                $autocomplete[] = $command;
+            }
+        }
+
+        return implode(' ', $autocomplete);
+    }
+
     /**
      * Auto complete entity
      *
@@ -60,16 +83,16 @@ class MageHack_MageConsole_Model_Autocomplete extends MageHack_MageConsole_Model
         $message        = '';
         $entities       = array_keys($this->_getRequestModel()->getEntityMapping());
         $autocomplete   = array();
-        
+
         foreach ($entities as $entity) {
             if (preg_match('/^' . $entityPart .'.+/', $entity)) {
                 $autocomplete[] = $entity;
             }
         }
-                
+
         return implode(' ', $autocomplete);
     }
-    
+
     /**
      * Auto complete entity attribute
      *
@@ -124,15 +147,17 @@ class MageHack_MageConsole_Model_Autocomplete extends MageHack_MageConsole_Model
      * @return  MageHack_MageConsole_Model_Autocomplete
      */
     public function getOptions()
-    {        
-        /* Entity autocompletion */     
-        if (!$this->getRequest(2)) {
-            $this->setMessage($this->_completeEntity($this->getRequest(1)));
-        } else {            
+    {
+        /* Autocompletion */
+        if (!$this->getRequest(1)) { // Command
+            $this->setMessage($this->_completeCommand($this->getRequest(0)));
+        } else if (!$this->getRequest(2)) { // Entity
+                $this->setMessage($this->_completeEntity($this->getRequest(1)));
+        } else { // Where
             if (!$this->getRequest(3)) {
-                $this->setMessage($this->_completeEntityAttribute($this->getRequest(1), $this->getRequest(2)));                
+                $this->setMessage($this->_completeEntityAttribute($this->getRequest(1), $this->getRequest(2)));
             } else if ($this->getRequest(3) && strtolower($this->getRequest(3) != self::WHERE)) {
-                $this->setMessage($this->_completeEntityAttribute($this->getRequest(1), $this->getRequest(3)));                                
+                $this->setMessage($this->_completeEntityAttribute($this->getRequest(1), $this->getRequest(3)));
             }
         }
 

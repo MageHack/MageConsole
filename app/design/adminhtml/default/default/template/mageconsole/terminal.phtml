@@ -73,19 +73,44 @@
             tabcompletion: true,
             prompt: 'Mage> ',
             keydown: function (e) {
-                if (e.which == 67 && e.ctrlKey) {
+                if (e.which == 67 && e.ctrlKey) { // ctrl-c
                     e.preventDefault();
                     //alert('ctrl-c placeholder');
                     mcterm.set_command('');
+                    if (mcwizard.actkey) { mcterm.pop(); delete mcwizard.actkey; }
                     return false;
-                } else if (e.which == 68 && e.ctrlKey) {
+                } else if (e.which == 68 && e.ctrlKey) { // ctrl-d
                     e.preventDefault();
-                    console.log('save');
+                    if (mcwizard.actkey) jt_send();
+//                    console.log('save');
                     // TODO save()
                     return false;
-                } else if (e.which == 77 && (e.ctrlKey) && (e.shiftKey)) {
+                } else if (e.which == 77 && (e.ctrlKey) && (e.shiftKey)) { // shift-ctrl-m
                     e.preventDefault();
                     jQuery('#terminal').hide();
+                    return false;
+                } else if (e.which == 9) { // tab completion
+                    if (mcwizard.actkey !== undefined) return false;
+                    var command = mcterm.get_command();
+                   // console.log(command);
+                        jQuery.ajax({
+                            type: "GET",
+                            dataType: 'json',
+                            url: "<?php echo $this->getAutocompleteUrl(); ?>request/"+command,
+                        }).done(function (response) {
+                                if (response.message == '') return false;
+                                var ocwords = command.split(' ');
+                                ocwords.splice(-1);
+                                var cwords = response.message.split(' ');
+                                if (cwords.length === 1) {
+                                    if (ocwords.join(' ').length > 0)
+                                        mcterm.set_command(ocwords.join(' ')+' '+cwords[0]+' ');
+                                    else
+                                        mcterm.set_command(cwords[0]+' ');
+                                } else if (cwords.length > 1) {
+                                    mcterm.echo(cwords.join('\t'));
+                                }
+                            });
                     return false;
                 }
             }});
@@ -104,21 +129,25 @@
         }
     });
 
+    function jt_send () {
+        jQuery.ajax({
+            type: "POST",
+            data: { key: mcwizard.formkey, data: mcwizard.storedData },
+            dataType: 'json',
+            url: "<?php echo $this->getPromptUrl(); ?>",
+        }).done(function (response) {
+                term.echo("Product is saved");
+                mcterm.pop();
+            });
+        delete mcwizard.actkey;
+    }
+
     function jt_prompt (cmd) {
         var oldkey = mcwizard.actkey;
         mcwizard.storedData[oldkey] = cmd;
         console.log(mcwizard.mattrs);
         if(Object.keys(mcwizard.mattrs).length == 0) {
-            console.log(mcwizard.storedData);
-            jQuery.ajax({
-                type: "POST",
-                data: { key: mcwizard.formkey, data: mcwizard.storedData },
-                dataType: 'json',
-                url: "<?php echo $this->getPromptUrl(); ?>",
-            }).done(function (response) {
-                    term.echo("Product is saved");
-                    mcterm.pop();
-                });
+            jt_send();
             return false;
         }
         var key = '';
@@ -128,7 +157,6 @@
         delete mcwizard.mattrs[key];
         mcterm.pop();
         mcterm.push(jt_prompt,{ prompt:aname+': ',name: key});
-//        term.echo(cmd);
     }
 
 </script>

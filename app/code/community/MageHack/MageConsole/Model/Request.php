@@ -22,12 +22,12 @@ class MageHack_MageConsole_Model_Request extends MageHack_MageConsole_Model_Abst
     var $_entityMapping = array(
         'category'      => 'mageconsole/request_catalog_category',
         'product'       => 'mageconsole/request_product',
-        'creditmemo'    => 'mageconsole/request_creditmemo',
         'customer'      => 'mageconsole/request_customer',
         'address'       => 'mageconsole/request_address',
-        'invoice'       => 'mageconsole/request_invoice',
         'order'         => 'mageconsole/request_sales_order',
-        'shipment'      => 'mageconsole/request_shipment',
+        'invoice'       => 'mageconsole/request_sales_invoice',
+        'creditmemo'    => 'mageconsole/request_sales_creditmemo',
+        'shipment'      => 'mageconsole/request_sales_shipment',
         ''              => 'mageconsole/request_help',
     );
 

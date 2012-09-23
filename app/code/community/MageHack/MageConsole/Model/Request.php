@@ -20,20 +20,19 @@ class MageHack_MageConsole_Model_Request extends MageHack_MageConsole_Model_Abst
      * @var array
      */
     var $_entityMapping = array(
-        'category' => 'mageconsole/request_catalog_category',
-        'product' => 'mageconsole/request_catalog_product',
-        'customer' => 'mageconsole/request_customer',
-        'address' => 'mageconsole/request_address',
-        'order' => 'mageconsole/request_sales_order',
-        'invoice' => 'mageconsole/request_sales_invoice',
+        'category'  => 'mageconsole/request_catalog_category',
+        'product'   => 'mageconsole/request_catalog_product',
+        'customer'  => 'mageconsole/request_customer',
+        'order'     => 'mageconsole/request_sales_order',
+        'invoice'   => 'mageconsole/request_sales_invoice',
         'creditmemo' => 'mageconsole/request_sales_creditmemo',
-        'shipment' => 'mageconsole/request_sales_shipment',
-        'cache' => 'mageconsole/request_cache',
-        'config' => 'mageconsole/request_config',
-        'store' => 'mageconsole/request_store',
-        '' => 'mageconsole/request_help',
-        'index' => 'mageconsole/request_index',
-        'cron' => 'mageconsole/request_cron'
+        'shipment'  => 'mageconsole/request_sales_shipment',
+        'cache'     => 'mageconsole/request_cache',
+        'config'    => 'mageconsole/request_config',
+        'store'     => 'mageconsole/request_store',
+        ''          => 'mageconsole/request_help',
+        'index'     => 'mageconsole/request_index',
+        'cron'      => 'mageconsole/request_cron'
     );
 
     /**
@@ -42,18 +41,18 @@ class MageHack_MageConsole_Model_Request extends MageHack_MageConsole_Model_Abst
      * @var array
      */
     var $_actionMapping = array(
-        'add' => 'add',
-        'update' => 'update',
-        'remove' => 'remove',
-        'show' => 'show',
-        'list' => 'listing',
-        'clear' => 'clear',
-        'help' => 'help',
-        'set' => 'set',
-        'get' => 'get',
-        'enable' => 'enable',
-        'disable' => 'disable',
-        'run' => 'run'
+        'add'       => 'add',
+        'update'    => 'update',
+        'remove'    => 'remove',
+        'show'      => 'show',
+        'list'      => 'listing',
+        'clear'     => 'clear',
+        'help'      => 'help',
+        'set'       => 'set',
+        'get'       => 'get',
+        'enable'    => 'enable',
+        'disable'   => 'disable',
+        'run'       => 'run'
     );
 
     /**
@@ -61,7 +60,8 @@ class MageHack_MageConsole_Model_Request extends MageHack_MageConsole_Model_Abst
      *
      * @return  mixed
      * */
-    public function getEntityMapping($entity = null) {
+    public function getEntityMapping($entity = null)
+    {
         if (is_null($entity)) {
             return $this->_entityMapping;
         }
@@ -78,7 +78,8 @@ class MageHack_MageConsole_Model_Request extends MageHack_MageConsole_Model_Abst
      *
      * @return  mixed
      * */
-    public function getActionMapping($action = null) {
+    public function getActionMapping($action = null)
+    {
         if (is_null($action)) {
             return $this->_actionMapping;
         }
@@ -95,7 +96,8 @@ class MageHack_MageConsole_Model_Request extends MageHack_MageConsole_Model_Abst
      *
      * @return  MageHack_MageConsole_Model_Abstract
      */
-    public function getEntityModel() {
+    public function getEntityModel()
+    {
         return $this->_entityModel;
     }
 
@@ -104,7 +106,8 @@ class MageHack_MageConsole_Model_Request extends MageHack_MageConsole_Model_Abst
      *
      * @param   MageHack_MageConsole_Model_Abstract $entityModel
      */
-    public function setEntityModel($entityModel) {
+    public function setEntityModel($entityModel)
+    {
         $this->_entityModel = $entityModel;
         return $this;
     }
@@ -115,7 +118,8 @@ class MageHack_MageConsole_Model_Request extends MageHack_MageConsole_Model_Abst
      * @throws  Mage_Core_Exception
      * @return  array
      */
-    public function dispatch($data = null) {
+    public function dispatch($data = null)
+    {
         if (!$actionName = $this->getActionMapping($this->getAction())) {
             Mage::throwException('Invalid action: ' . $this->getAction());
         }
@@ -130,12 +134,12 @@ class MageHack_MageConsole_Model_Request extends MageHack_MageConsole_Model_Abst
 
         $entityModel->setRequest($this->getRequest());
         $this->setEntityModel($entityModel);
-        
+
         if (is_null($data)) {
-            call_user_func(array($entityModel, $actionName));            
+            call_user_func(array($entityModel, $actionName));
         } else {
-            call_user_func(array($entityModel, $actionName), $data);                        
-        } 
+            call_user_func(array($entityModel, $actionName), $data);
+        }
 
         return $this->getEntityModel();
     }

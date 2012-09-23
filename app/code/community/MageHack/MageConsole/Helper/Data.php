@@ -21,16 +21,32 @@ class MageHack_MageConsole_Helper_Data extends Mage_Core_Helper_Abstract
 
     public function createTable(array $data, $showHeader = true, $columnWidth = array('columnWidths' => array(10, 20)))
     {
-        $table = new Zend_Text_Table($columnWidth);
+        $tableConfig = array(
+            'columnWidths' =>  $columnWidth['columnWidths'],
+            'AutoSeparate' => Zend_Text_Table::AUTO_SEPARATE_ALL,
+            'padding'      => 1
+        );
+
+        $table = new Zend_Text_Table($tableConfig);
 
         if ($showHeader) {
             $table->appendRow($this->getHeader($data));
         }
         foreach ($data as $row) {
+            $row = $this->cleanArray($row);
             $table->appendRow($row);
         }
 
         return (string) $table;
+    }
+
+    protected function cleanArray($row = array())
+    {
+        $data = array();
+        foreach ($row as $val) {
+            $data[] = (string) $val;
+        }
+        return $data;
     }
 
     public function getHeader($data)

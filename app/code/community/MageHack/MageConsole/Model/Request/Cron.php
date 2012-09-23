@@ -67,7 +67,6 @@ class MageHack_MageConsole_Model_Request_Cron
     public function help() {
         $message = <<<USAGE
 Usage: list cron
-    run cron <task>
 
 USAGE;
         $this->setType(self::RESPONSE_TYPE_MESSAGE);

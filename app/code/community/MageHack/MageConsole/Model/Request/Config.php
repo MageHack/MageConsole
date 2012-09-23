@@ -6,17 +6,62 @@
  */
 class MageHack_MageConsole_Model_Request_Config
     extends MageHack_MageConsole_Model_Abstract
-    implements MageHack_MageConsole_Model_Request_Interface
 {
 
-//    protected $_attrToShow = array(
-//        'store' => 'store',
-//        'config' => 'config',
-//    );
-//
-//    protected $_columnWidths = array(
-//        'columnWidths' => array(12, 40)
-//    );
+    protected $_attrToShow = array(
+        'config_id'     => 'config_id',
+        'scope'         => 'scope',
+        'scope_id'      => 'scope_id',
+        'path'          => 'path',
+        'value'         => 'value',
+    );
+
+    protected $_columnWidths = array(
+        'columnWidths' => array(20, 30, 20, 50, 50)
+    );
+
+    /**
+     * Get instance of Customer model
+     *
+     * @return  Mage_Core_Model_Cache
+     */
+    protected function _getModel()
+    {
+        return Mage::getModel('core/config_data');
+    }
+
+    /**
+     * List command
+     *
+     * @return  MageHack_MageConsole_Model_Abstract
+     */
+    public function listing()
+    {
+        $collection = $this->_getModel()
+            ->getCollection();
+
+        foreach ($this->getConditions() as $condition) {
+            $collection->addFieldToFilter($condition['attribute'], array($condition['operator'] => $condition['value']));
+        }
+
+        if (!$collection->count()) {
+            $message = 'This is strange, we did not find any cache types.';
+        } else if ($collection->count() > 0) {
+            $values = $collection->toArray();
+            if (is_array($values) && $values['totalRecords'] > 0) {
+                foreach ($values['items'] as $row) {
+                    if (is_array($row)) {
+                        $_values[] = (array_intersect_key($row, $this->_attrToShow));
+                    }
+                }
+                $message = Mage::helper('mageconsole')->createTable($_values, true, $this->_columnWidths);
+            }
+        }
+
+        $this->setType(self::RESPONSE_TYPE_MESSAGE);
+        $this->setMessage($message);
+        return $this;
+    }
 
     /**
      * Set store command
@@ -25,23 +70,13 @@ class MageHack_MageConsole_Model_Request_Config
      */
     public function set()
     {
-        $this->setType(self::RESPONSE_TYPE_PROMPT);
-        $vals = array();
-        foreach (Mage::app()->getStores() as $store) {
-            $vals[] = array('value' => $store->getId(), 'label'=>$store->getName());
-        }
-        $this->setMessage(array('label' => 'Set config to:', 'values' => $vals));
-        return $this;
-    }
-
-    /**
-     * Save command
-     *
-     * @return  MageHack_MageConsole_Model_Abstract
-     */
-    public function prompt()
-    {
-
+//        $this->setType(self::RESPONSE_TYPE_PROMPT);
+//        $vals = array();
+//        foreach (Mage::app()->getStores() as $store) {
+//            $vals[] = array('value' => $store->getId(), 'label'=>$store->getName());
+//        }
+//        $this->setMessage(array('label' => 'Set config to:', 'values' => $vals));
+//        return $this;
     }
 
 
@@ -51,10 +86,13 @@ class MageHack_MageConsole_Model_Request_Config
      * @return MageHack_MageConsole_Model_Abstract
      *
      */
-    public function help()
-    {
+    public function help() {
+        $message = <<<USAGE
+Usage: list config
+
+USAGE;
         $this->setType(self::RESPONSE_TYPE_MESSAGE);
-        $this->setMessage('help was requested for a store command - this is the help message');
+        $this->setMessage($message);
         return $this;
     }
 }

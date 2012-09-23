@@ -64,7 +64,7 @@ class MageHack_MageConsole_Model_Autocomplete extends MageHack_MageConsole_Model
         $autocomplete   = array();
 
         foreach ($this->_commands as $command) {
-            if (preg_match('/^' . $commandPart .'.+/', $command)) {
+            if (preg_match('/^' . $commandPart .'.+/', $command) || $commandPart == $command) {
                 $autocomplete[] = $command;
             }
         }
@@ -85,7 +85,7 @@ class MageHack_MageConsole_Model_Autocomplete extends MageHack_MageConsole_Model
         $autocomplete   = array();
 
         foreach ($entities as $entity) {
-            if (preg_match('/^' . $entityPart .'.+/', $entity)) {
+            if (preg_match('/^' . $entityPart .'.+/', $entity) || $entityPart == $entity) {
                 $autocomplete[] = $entity;
             }
         }
@@ -152,12 +152,12 @@ class MageHack_MageConsole_Model_Autocomplete extends MageHack_MageConsole_Model
     public function getOptions()
     {
         /* Autocompletion */
-        if (!$this->getRequest(1)) { // Command
+        if (!$this->getRequest(1) && $this->getRequest(1) !== '') { // Command
             $this->setMessage($this->_completeCommand($this->getRequest(0)));
-        } else if (!$this->getRequest(2)) { // Entity
+        } else if (!$this->getRequest(2)  && $this->getRequest(2) !== '') { // Entity
                 $this->setMessage($this->_completeEntity($this->getRequest(1)));
         } else { // Where
-            if (!$this->getRequest(3)) {
+            if (!$this->getRequest(3)  && $this->getRequest(3) !== '') {
                 $this->setMessage($this->_completeEntityAttribute($this->getRequest(1), $this->getRequest(2)));
             } else if ($this->getRequest(3) && strtolower($this->getRequest(3) != self::WHERE)) {
                 $this->setMessage($this->_completeEntityAttribute($this->getRequest(1), $this->getRequest(3)));

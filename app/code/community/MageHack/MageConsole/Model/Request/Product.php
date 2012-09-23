@@ -130,17 +130,25 @@ class MageHack_MageConsole_Model_Request_Product extends MageHack_MageConsole_Mo
      * @return array
      */
     public function getReqAttr() {
-        $sql = "SELECT e.attribute_code, e.frontend_label FROM `eav_attribute` as e WHERE entity_type_id IN(select eat.entity_type_id FROM eav_entity_type as eat where eat.entity_type_code = 'catalog_product') and e.is_required =1 and frontend_label is not null";
-
-        $connection = Mage::getSingleton('core/resource')->getConnection('core_read');
-        $attributes = array();
-        $_attributes = $connection->fetchAll($sql);
-        if (count($_attributes) > 0) {
-            foreach ($_attributes as $_attribute) {
-                $attributes[$_attribute['attribute_code']] = $_attribute['frontend_label'];
-            }
+        $ret = array();
+        $attributes = Mage::getModel('catalog/product')->getAttributes();
+        foreach ($attributes as $a) {
+            $values = $a->getSource()->getAllOptions(false);
+            if ($a->getData('frontend_input') == 'hidden' || !$a->getData('frontend_label')) continue;
+            $ret[$a->getAttributeCode()] = array('label' => $a->getData('frontend_label'), 'values'=>$values);
         }
-        return $attributes;
+
+//        $sql = "SELECT e.attribute_code, e.frontend_label, e.backend_type FROM `eav_attribute` as e WHERE entity_type_id IN(select eat.entity_type_id FROM eav_entity_type as eat where eat.entity_type_code = 'catalog_product') and e.is_required =1 and frontend_label is not null";
+//
+//        $connection = Mage::getSingleton('core/resource')->getConnection('core_read');
+//        $attributes = array();
+//        $_attributes = $connection->fetchAll($sql);
+//        if (count($_attributes) > 0) {
+//            foreach ($_attributes as $_attribute) {
+//                $attributes[$_attribute['attribute_code']] = array('label' => $_attribute['frontend_label'], 'type' => $_attribute['backend_type']);
+//            }
+//        }
+        return $ret;
     }
 
     protected function _getAddPrompt() {

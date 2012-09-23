@@ -46,12 +46,12 @@
                                         if(Object.keys(response.message).length == 0) break;
                                         mcwizard.mattrs = response.message;
                                         for (key in mcwizard.mattrs) break;
-                                        var aname = mcwizard.mattrs[key];
+                                        var attrdata = mcwizard.mattrs[key];
                                         mcwizard.storedData  = new Object();
                                         mcwizard.actkey = key;
                                         mcwizard.formkey = response.key;
                                         delete mcwizard.mattrs[key];
-                                        term.push(jt_prompt,{ prompt:aname+': ',name:key});
+                                        term.push(jt_prompt,{ prompt:'\t[[b;#eee;#000]'+attrdata['label']+':] ',name:key});
                                         break;
                                     case "ERROR":
                                         term.error(new String(response.message));
@@ -71,7 +71,7 @@
             name: 'mageconsole',
             height: 200,
             tabcompletion: true,
-            prompt: 'Mage> ',
+            prompt: '[[b;#fff;#000]Mage>] ',
             keydown: function (e) {
                 if (e.which == 67 && e.ctrlKey) { // ctrl-c
                     e.preventDefault();
@@ -96,7 +96,7 @@
                         jQuery.ajax({
                             type: "GET",
                             dataType: 'json',
-                            url: "<?php echo $this->getAutocompleteUrl(); ?>request/"+command,
+                            url: "<?php echo $this->getAutocompleteUrl(); ?>request/"+encodeURIComponent(command),
                         }).done(function (response) {
                                 if (response.message == '') return false;
                                 var ocwords = command.split(' ');
@@ -130,14 +130,16 @@
     });
 
     function jt_send () {
+        mcterm.pause();
         jQuery.ajax({
             type: "POST",
-            data: { key: mcwizard.formkey, data: mcwizard.storedData },
+            data: {form_key: jQuery('#terminalForm input[name=form_key]').val(), key: mcwizard.formkey, data: mcwizard.storedData },
             dataType: 'json',
             url: "<?php echo $this->getPromptUrl(); ?>",
         }).done(function (response) {
-                term.echo("Product is saved");
+                mcterm.echo("Product is saved");
                 mcterm.pop();
+                mcterm.resume();
             });
         delete mcwizard.actkey;
     }
@@ -152,11 +154,23 @@
         }
         var key = '';
         for (key in mcwizard.mattrs) break;
-        var aname = mcwizard.mattrs[key];
+        var attrdata = mcwizard.mattrs[key];
         mcwizard.actkey = key;
         delete mcwizard.mattrs[key];
         mcterm.pop();
-        mcterm.push(jt_prompt,{ prompt:aname+': ',name: key});
+        if (attrdata['values'].length == 0)
+            mcterm.push(jt_prompt,{ prompt:'\t[[b;#eee;#000]'+attrdata['label']+':] ',name: key});
+        else {
+            var vals = '';
+            for (var i in attrdata['values']) {
+                var item = attrdata['values'][i];
+                if (item['value'] !== '' && item['value'] !== undefined && typeof item['value'] != 'array' && typeof item['value'] != 'object') {
+                    if (vals.length) vals += ',';
+                    vals += item['value']+':'+item['label'];
+                }
+            }
+            mcterm.push(jt_prompt,{ prompt:'\t[[b;#eee;#000]'+attrdata['label']+'('+vals+'):] ',name: key});
+        }
     }
 
 </script>

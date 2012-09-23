@@ -103,6 +103,7 @@ class MageHack_MageConsole_MageconsoleController extends Mage_Adminhtml_Controll
      */
     public function promptAction()
     {
+
         $params     = $this->getRequest()->getParams();
         $response   = new Varien_Object();
 
@@ -123,6 +124,6 @@ class MageHack_MageConsole_MageconsoleController extends Mage_Adminhtml_Controll
             $response->setMessage($e->getMessage());
         }
 
-        $this->getResponse()->setBody($response->toJson());
+        $this->getResponse()->setHeader('Content-Type', 'application/json', true)->setBody($response->toJson());
     }    
 }

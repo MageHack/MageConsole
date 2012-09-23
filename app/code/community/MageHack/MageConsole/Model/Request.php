@@ -32,7 +32,8 @@ class MageHack_MageConsole_Model_Request extends MageHack_MageConsole_Model_Abst
         'config' => 'mageconsole/request_config',
         'store' => 'mageconsole/request_store',
         '' => 'mageconsole/request_help',
-        'index' => 'mageconsole/request_index'
+        'index' => 'mageconsole/request_index',
+        'cron' => 'mageconsole/request_cron'
     );
 
     /**

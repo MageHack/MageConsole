@@ -21,7 +21,7 @@ class MageHack_MageConsole_Model_Request extends MageHack_MageConsole_Model_Abst
      */
     var $_entityMapping = array(
         'category'      => 'mageconsole/request_catalog_category',
-        'product'       => 'mageconsole/request_catalog_product',
+        'product'       => 'mageconsole/request_product',
         'customer'      => 'mageconsole/request_customer',
         'address'       => 'mageconsole/request_address',
         'order'         => 'mageconsole/request_sales_order',
@@ -29,6 +29,8 @@ class MageHack_MageConsole_Model_Request extends MageHack_MageConsole_Model_Abst
         'creditmemo'    => 'mageconsole/request_sales_creditmemo',
         'shipment'      => 'mageconsole/request_sales_shipment',
         'cache'         => 'mageconsole/request_cache',
+        'config'        => 'mageconsole/request_config',
+        'store'         => 'mageconsole/request_store',
         ''              => 'mageconsole/request_help',
     );
 
@@ -45,6 +47,7 @@ class MageHack_MageConsole_Model_Request extends MageHack_MageConsole_Model_Abst
         'list'      => 'listing',
         'clear'     => 'clear',
         'help'      => 'help',
+        'set'       => 'set',
     );
 
     /**

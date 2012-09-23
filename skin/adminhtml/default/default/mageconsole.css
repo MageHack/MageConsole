@@ -15,6 +15,8 @@
     padding: 10px;
     position: relative;
     overflow: hidden;
+    bottom: 15px;
+    border-bottom: 15px solid black;
 }
 .cmd {
     padding: 0;

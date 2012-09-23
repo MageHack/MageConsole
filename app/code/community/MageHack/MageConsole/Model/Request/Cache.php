@@ -30,9 +30,8 @@ class MageHack_MageConsole_Model_Request_Cache
         return Mage::getModel('core/cache');
     }
 
-
     /**
-     * List command
+     * List all Cache types
      *
      * @return  MageHack_MageConsole_Model_Abstract
      */
@@ -62,6 +61,11 @@ class MageHack_MageConsole_Model_Request_Cache
         return $this;
     }
 
+    /*
+     * Return all available cache types
+     *
+     * @return array $codes
+     */
     protected function _getCacheTypeCodes()
     {
         $types = Mage::app()->getCacheInstance()->getTypes();
@@ -71,6 +75,11 @@ class MageHack_MageConsole_Model_Request_Cache
         return $codes;
     }
 
+    /**
+     * Enable cache for specified type
+     *
+     * @return MageHack_MageConsole_Model_Abstract
+     */
     public function enable()
     {
         $cacheType = $this->getRequest(2);
@@ -103,6 +112,11 @@ class MageHack_MageConsole_Model_Request_Cache
         return $this;
     }
 
+    /**
+     * Disable cache for specified type
+     *
+     * @return MageHack_MageConsole_Model_Abstract
+     */
     public function disable()
     {
         $cacheType = $this->getRequest(2);
@@ -135,6 +149,11 @@ class MageHack_MageConsole_Model_Request_Cache
         return $this;
     }
 
+    /**
+     * Clear cache for specified type
+     *
+     * @return MageHack_MageConsole_Model_Abstract
+     */
     public function clear()
     {
         $cacheType = $this->getRequest(2);
@@ -191,12 +210,16 @@ class MageHack_MageConsole_Model_Request_Cache
      * Help command
      *
      * @return MageHack_MageConsole_Model_Abstract
-     *
      */
     public function help()
     {
+        $message = "Available commands:
+        clear cache <cache_id>, all, images, storage, magento
+        enable cache <cache_id>, all
+        disable cache <cache_id>, all
+        list cache";
         $this->setType(self::RESPONSE_TYPE_MESSAGE);
-        $this->setMessage('help was requested for a product - this is the help message');
+        $this->setMessage($message);
         return $this;
     }
 }

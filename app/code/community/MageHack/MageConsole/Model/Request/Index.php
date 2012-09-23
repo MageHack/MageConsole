@@ -40,12 +40,39 @@ MageHack_MageConsole_Model_Abstract {
     }
 
     /**
-     * Update command
+     * Update command for mode
      *
      * @return  MageHack_MageConsole_Model_Abstract
      */
     public function update() {
-        
+        $message = '';
+        $request = $this->getRequest(2);
+        if ($request) {
+            $parseResponse = $this->_parseIndexerString($request);
+            if (is_array($parseResponse)) {
+                $updatePair = $this->getRequest(3);
+                if (preg_match_all('/mode\s*=\s*(manual)|mode\s*=\s*(real_time)/', $updatePair, $matches)) {
+                    if ($matches[1][0] !== '')
+                        $match = $matches[1][0];
+                    if ($matches[2][0] !== '')
+                        $match = $matches[2][0];
+                    if ($match) {
+                        foreach ($parseResponse as $process) {
+                            $process->setData('mode', $match);
+                            $process->save();
+                            $message.='
+                                The mode of ' . $process->getIndexer()->getName() . ' has been changed to ' . $match;
+                        }
+                    }
+                }
+            } else {
+                $message.=$parseResponse;
+            }
+        }
+        $this->setType(self::RESPONSE_TYPE_MESSAGE);
+        $this->setMessage($message);
+
+        return $this;
     }
 
     /*
@@ -53,6 +80,7 @@ MageHack_MageConsole_Model_Abstract {
      *
      * @return Varien_Data_Collection
      */
+
     protected function _getMatchedResults() {
         $collection = $this->_getModel()->getProcessesCollection();
         foreach ($collection as $key => $item) {
@@ -155,14 +183,33 @@ MageHack_MageConsole_Model_Abstract {
     public function help() {
         $message = <<<USAGE
    
-Usage: index <index_code>
-    Product Attributes => catalog_product_attribute
-    Product Prices => catalog_product_price
-    Catalog URL Rewrites => catalog_url
-    Product Flat Data => catalog_product_flat
-    
- or index all
+Usage: 
+index index_code
+index index_code1,index_code2
+index all
 
+update index index_code mode=real_time
+update index index_code mode=manual
+update index cu,cpf mode=real_time
+update index catalog_url,catalog_product_flat mode=real_time
+
+Note : Only the mode attribute can be updated;
+
+Product Attributes => catalog_product_attribute
+Product Prices => catalog_product_price
+Catalog URL Rewrites => catalog_url
+Product Flat Data => catalog_product_flat
+    
+Index Aliases are;
+        'cpa' => 'catalog_product_attribute',
+        'cpp' => 'catalog_product_price',
+        'cu' => 'catalog_url',
+        'cpf' => 'catalog_product_flat',
+        'ccf' => 'catalog_category_flat',
+        'ccp' => 'catalog_category_product',
+        'csf' => 'catalogsearch_fulltext',
+        'cis' => 'cataloginventory_stock',
+        'ts' => 'tag_summary'
 USAGE;
         $this->setType(self::RESPONSE_TYPE_MESSAGE);
         $this->setMessage($message);

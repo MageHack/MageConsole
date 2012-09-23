@@ -79,21 +79,38 @@ class MageHack_MageConsole_Model_Request_Config
 //        return $this;
     }
 
-    public function update() {
-        $this->setType(self::RESPONSE_TYPE_PROMPT);
-        $collection = $this->_getModel()
-            ->getCollection();
-        foreach ($this->getConditions() as $condition) {
-            $collection->addFieldToFilter($condition['attribute'], array($condition['operator'] => $condition['value']));
+    public function update($data = null) {
+        if ($data) {
+            $this->setType(self::RESPONSE_TYPE_MESSAGE);
+            $w = Mage::getSingleton('core/resource')->getConnection('core_write');
+            $msg = '';
+            foreach ($data as $key => $value) {
+                $id = str_replace('conf_','',$key)*1;
+                if ($id) {
+                    $w->query("update core_config_data set value=? where config_id=?",array($value,$id));
+                    $msg .= " updated $id to '$value', ";
+                } else {
+                    $msg .= "bad key '$key', ";
+                }
+            }
+            $msg .= 'OK';
+            $this->setMessage($msg);
+        } else {
+            $this->setType(self::RESPONSE_TYPE_PROMPT);
+            $collection = $this->_getModel()
+                ->getCollection();
+            foreach ($this->getConditions() as $condition) {
+                $collection->addFieldToFilter($condition['attribute'], array($condition['operator'] => $condition['value']));
+            }
+            $ret = array();
+            $attributes = $this->_getModel()->getAttributes();
+            foreach ($collection as $conf) {
+                $values = $conf->getData();
+    //            if ($a->getData('frontend_input') == 'hidden' || !$a->getData('frontend_label')) continue;
+                $ret["conf_".$conf['config_id']] = array('label' => "{$conf['path']}({$conf['scope']},{$conf['scope_id']})", 'values'=>array(), 'value'=>$conf['value']);
+            }
+            $this->setMessage($ret);
         }
-        $ret = array();
-        $attributes = $this->_getModel()->getAttributes();
-        foreach ($collection as $conf) {
-            $values = $conf->getData();
-//            if ($a->getData('frontend_input') == 'hidden' || !$a->getData('frontend_label')) continue;
-            $ret["conf_".$conf['config_id']] = array('label' => "{$conf['path']}({$conf['scope']},{$conf['scope_id']})", 'values'=>array(), 'value'=>$conf['value']);
-        }
-        $this->setMessage($ret);
         return $this;
     }
 

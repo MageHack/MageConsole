@@ -186,5 +186,36 @@
         }
     }
 
+    jQuery(document).ready(function() {
+        var $dragging = null;
+        var $originalY = 0;
+        var $originalH = 0;
+
+        jQuery(document.body).on("mousemove", function(e) {
+            if ($dragging) {
+                $dragging.css('height', $originalY - e.screenY + $originalH );
+                jQuery("html, body").animate({ scrollTop: jQuery(document).height() }, "fast");
+            }
+        });
+
+
+        jQuery(document.body).on("mousedown", "div", function (e) {
+            if (e.target.id == 'terminal' && !$dragging) {
+                jQuery(document.body).attr('unselectable','on').css('MozUserSelect','none');
+                $originalY = e.screenY;
+                $originalH = jQuery(e.target).height();
+                $dragging = jQuery(e.target);
+                console.log($originalY);
+                console.log($originalH);
+            }
+        });
+
+        jQuery(document.body).on("mouseup", function (e) {
+            $dragging = null;
+            jQuery(document.body).attr('unselectable','off').css('MozUserSelect','');
+        });
+    });
+
+
 </script>
 <?php endif; ?>

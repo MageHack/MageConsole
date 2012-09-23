@@ -49,6 +49,8 @@ class MageHack_MageConsole_Model_Request extends MageHack_MageConsole_Model_Abst
         'help'      => 'help',
         'set'       => 'set',
         'get'       => 'get',
+        'enable'    => 'enable',
+        'disable'   => 'disable',
     );
 
     /**

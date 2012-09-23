@@ -62,6 +62,79 @@ class MageHack_MageConsole_Model_Request_Cache
         return $this;
     }
 
+    protected function _getCacheTypeCodes()
+    {
+        $types = Mage::app()->getCacheInstance()->getTypes();
+        foreach ($types as $type) {
+            $codes[] = $type->getId();
+        }
+        return $codes;
+    }
+
+    public function enable()
+    {
+        $cacheType = $this->getRequest(2);
+        if ($cacheType) {
+            $allTypes = Mage::app()->useCache();
+            switch ($cacheType) {
+                case 'all':
+                    foreach ($this->_getCacheTypeCodes() as $code) {
+                        $allTypes[$code] = 1;
+                    }
+                    Mage::app()->saveUseCache($allTypes);
+                    $message = 'All cache type(s) enabled.';
+                    break;
+                default:
+                    $allTypes = Mage::app()->useCache();
+                    $codes = $this->_getCacheTypeCodes();
+                    if (in_array($cacheType, $codes)) {
+                        $allTypes[$cacheType] = 1;
+                    }
+                    Mage::app()->saveUseCache($allTypes);
+                    $message = sprintf('Cache type %s enabled.', $cacheType);
+                    break;
+            }
+            $this->setType(self::RESPONSE_TYPE_MESSAGE);
+            $this->setMessage($message);
+        } else {
+            $this->setType(self::RESPONSE_TYPE_ERROR);
+            $this->setMessage('Missing cache type argument, Try enable cache cache_id. To see list of all cache types, use "list cache" command.');
+        }
+        return $this;
+    }
+
+    public function disable()
+    {
+        $cacheType = $this->getRequest(2);
+        if ($cacheType) {
+            $allTypes = Mage::app()->useCache();
+            switch ($cacheType) {
+                case 'all':
+                    foreach ($this->_getCacheTypeCodes() as $code) {
+                        $allTypes[$code] = 0;
+                    }
+                    Mage::app()->saveUseCache($allTypes);
+                    $message = 'All cache type(s) disabled.';
+                    break;
+                default:
+                    $allTypes = Mage::app()->useCache();
+                    $codes = $this->_getCacheTypeCodes();
+                    if (in_array($cacheType, $codes)) {
+                        $allTypes[$cacheType] = 0;
+                    }
+                    Mage::app()->saveUseCache($allTypes);
+                    $message = sprintf('Cache type %s disabled.', $cacheType);
+                    break;
+            }
+            $this->setType(self::RESPONSE_TYPE_MESSAGE);
+            $this->setMessage($message);
+        } else {
+            $this->setType(self::RESPONSE_TYPE_ERROR);
+            $this->setMessage('Missing cache type argument, Try disable cache cache_id. To see list of all cache types, use "list cache."');
+        }
+        return $this;
+    }
+
     public function clear()
     {
         $cacheType = $this->getRequest(2);
@@ -104,9 +177,13 @@ class MageHack_MageConsole_Model_Request_Cache
                     $message = sprintf('The %s cache was refreshed.', $cacheType);
                     break;
             }
+            $this->setType(self::RESPONSE_TYPE_MESSAGE);
+            $this->setMessage($message);
+        } else {
+            $this->setType(self::RESPONSE_TYPE_ERROR);
+            $this->setMessage('Missing cache type argument, Try clear cache (all, images, storage, magento)' .
+                "\n" . 'Alternatively to clear specific cache type try "clear cache id", To see all cache ids, run the "list cache" command');
         }
-        $this->setType(self::RESPONSE_TYPE_MESSAGE);
-        $this->setMessage($message);
         return $this;
     }
 

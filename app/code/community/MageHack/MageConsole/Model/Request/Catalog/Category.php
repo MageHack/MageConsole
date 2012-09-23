@@ -9,6 +9,18 @@ class MageHack_MageConsole_Model_Request_Catalog_Category
     implements MageHack_MageConsole_Model_Request_Interface
 {
 
+    protected $_attrToShow = array(
+        'entity_id' => 'entity_id',
+        'name' => 'name',
+        'is_active' => 'is_active',
+        'display_mode' => 'display_mode',
+    );
+
+    protected $_columnWidths = array(
+        'columnWidths' => array(12, 40, 12, 12)
+    );
+
+
     /**
      * Get instance of Customer model
      *
@@ -104,7 +116,26 @@ class MageHack_MageConsole_Model_Request_Catalog_Category
      */
     public function listing()
     {
+        $collection = $this->_getMatchedResults();
 
+        foreach ($this->_attrToShow as $attr) {
+            $collection->addAttributeToSelect($attr);
+        }
+
+        if (!$collection->count()) {
+            $message = 'No match found';
+        } else if ($collection->count() > 0) {
+            $values = $collection->toArray();
+            foreach ($values as $row) {
+                $_values[] = (array_intersect_key($row, $this->_attrToShow));
+            }
+            $message = Mage::helper('mageconsole')->createTable($_values, true, $this->_columnWidths);
+        }
+
+        $this->setType(self::RESPONSE_TYPE_MESSAGE);
+        $this->setMessage($message);
+
+        return $this;
     }
 
     /**

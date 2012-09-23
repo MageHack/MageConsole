@@ -129,7 +129,7 @@ class MageHack_MageConsole_Model_Autocomplete extends MageHack_MageConsole_Model
         }
         
         $connection = Mage::getSingleton('core/resource')->getConnection('core_read');
-        $attributes = array_keys($connection->describeTable('sales_flat_order'));            
+        $attributes = array_keys($connection->describeTable($table));            
         
         foreach ($attributes as $attribute) {
             if (preg_match('/^' . $attributePart .'.+/', $attribute)) {

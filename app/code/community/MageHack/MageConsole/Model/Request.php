@@ -48,6 +48,7 @@ class MageHack_MageConsole_Model_Request extends MageHack_MageConsole_Model_Abst
         'clear'     => 'clear',
         'help'      => 'help',
         'set'       => 'set',
+        'get'       => 'get',
     );
 
     /**

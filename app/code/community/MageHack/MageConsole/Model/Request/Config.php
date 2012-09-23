@@ -9,14 +9,14 @@ class MageHack_MageConsole_Model_Request_Config
     implements MageHack_MageConsole_Model_Request_Interface
 {
 
-    protected $_attrToShow = array(
-        'store' => 'store',
-        'config' => 'config',
-    );
-
-    protected $_columnWidths = array(
-        'columnWidths' => array(12, 40)
-    );
+//    protected $_attrToShow = array(
+//        'store' => 'store',
+//        'config' => 'config',
+//    );
+//
+//    protected $_columnWidths = array(
+//        'columnWidths' => array(12, 40)
+//    );
 
     /**
      * Set store command

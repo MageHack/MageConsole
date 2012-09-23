@@ -9,14 +9,14 @@ class MageHack_MageConsole_Model_Request_Store
     implements MageHack_MageConsole_Model_Request_Interface
 {
 
-    protected $_attrToShow = array(
-        'store' => 'store',
-        'config' => 'config',
-    );
-
-    protected $_columnWidths = array(
-        'columnWidths' => array(12, 40)
-    );
+//    protected $_attrToShow = array(
+//        'store' => 'store',
+//        'config' => 'config',
+//    );
+//
+//    protected $_columnWidths = array(
+//        'columnWidths' => array(12, 40)
+//    );
 
     /**
      * Set store command
@@ -26,11 +26,11 @@ class MageHack_MageConsole_Model_Request_Store
     public function set()
     {
         $this->setType(self::RESPONSE_TYPE_PROMPT);
-        $vals = array();
+        $values = array();
         foreach (Mage::app()->getStores() as $store) {
-            $vals[] = array('value' => $store->getId(), 'label'=>$store->getName());
+            $values[] = array('value' => $store->getId(), 'label'=>$store->getName());
         }
-        $this->setMessage(array('label' => 'Set store to:', 'values' => $vals));
+        $this->setMessage(array('store'=>array('label' => 'Set store to:', 'values' => $values)));
         return $this;
     }
 

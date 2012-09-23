@@ -28,6 +28,7 @@ class MageHack_MageConsole_Model_Request extends MageHack_MageConsole_Model_Abst
         'invoice'       => 'mageconsole/request_sales_invoice',
         'creditmemo'    => 'mageconsole/request_sales_creditmemo',
         'shipment'      => 'mageconsole/request_sales_shipment',
+        'cache'         => 'mageconsole/request_cache',
         ''              => 'mageconsole/request_help',
     );
 
@@ -42,6 +43,7 @@ class MageHack_MageConsole_Model_Request extends MageHack_MageConsole_Model_Abst
         'remove'    => 'remove',
         'show'      => 'show',
         'list'      => 'listing',
+        'clear'     => 'clear',
         'help'      => 'help',
     );
 

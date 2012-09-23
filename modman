@@ -1,7 +1,7 @@
 app/code/community/MageHack                             app/code/community/MageHack
 app/etc/modules/MageHack_MageConsole.xml                app/etc/modules/MageHack_MageConsole.xml
 app/design/adminhtml/default/default/layout/mageconsole.xml app/design/adminhtml/default/default/layout/mageconsole.xml
-app/design/adminhtml/default/default/template/mageconsole  app/design/adminhtml/default/default/layout/mageconsole
+app/design/adminhtml/default/default/template/mageconsole  app/design/adminhtml/default/default/template/mageconsole
 js/lib/jquery-1.8.2.min.js                              js/lib/jquery-1.8.2.min.js
 js/lib/jquery.mousewheel-min.js                         js/lib/jquery.mousewheel-min.js
 js/lib/jquery.terminal-src.js                           js/lib/jquery.terminal-src.js

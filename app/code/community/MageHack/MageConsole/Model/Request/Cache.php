@@ -9,6 +9,7 @@ class MageHack_MageConsole_Model_Request_Cache
 {
 
     protected $_attrToShow = array(
+        'id'            => 'id',
         'cache_type'    => 'cache_type',
         'description'   => 'description',
         'tags'          => 'tags',
@@ -16,7 +17,7 @@ class MageHack_MageConsole_Model_Request_Cache
     );
 
     protected $_columnWidths = array(
-        'columnWidths' => array(30, 30, 50, 20)
+        'columnWidths' => array(20, 30, 30, 50, 20)
     );
 
     /**
@@ -56,6 +57,54 @@ class MageHack_MageConsole_Model_Request_Cache
             }
         }
 
+        $this->setType(self::RESPONSE_TYPE_MESSAGE);
+        $this->setMessage($message);
+        return $this;
+    }
+
+    public function clear()
+    {
+        $cacheType = $this->getRequest(2);
+        if ($cacheType) {
+            switch ($cacheType) {
+                case 'all':
+                    foreach (Mage::app()->getCacheInstance()->getTypes() as $type) {
+                        $tags = Mage::app()->getCacheInstance()->cleanType($type->getId());
+                        Mage::dispatchEvent('adminhtml_cache_refresh_type', array('type' => $type->getId()));
+                    }
+                    $message = 'All cache type(s) refreshed.';
+                    break;
+                case 'storage':
+                    Mage::dispatchEvent('adminhtml_cache_flush_all');
+                    Mage::app()->getCacheInstance()->flush();
+                    $message = 'The cache storage has been flushed.';
+                    break;
+                case 'magento':
+                    Mage::app()->cleanCache();
+                    Mage::dispatchEvent('adminhtml_cache_flush_system');
+                    $message = 'The Magento cache storage has been flushed.';
+                    break;
+                case 'images':
+                    try {
+                        Mage::getModel('catalog/product_image')->clearCache();
+                        Mage::dispatchEvent('clean_catalog_images_cache_after');
+                        $message = 'The image cache was cleaned.';
+                    }
+                    catch (Mage_Core_Exception $e) {
+                        $this->_getSession()->addError($e->getMessage());
+                        $message = $e->getMessage();
+                    }
+                    catch (Exception $e) {
+                        $message = $e->getMessage();
+                    }
+                    break;
+                default:
+                    Mage::app()->getCacheInstance()->cleanType($cacheType);
+                    Mage::dispatchEvent('adminhtml_cache_refresh_type', array('type' => $cacheType));
+                    $message = sprintf('The %s cache was refreshed.', $cacheType);
+                    break;
+            }
+        }
         $this->setType(self::RESPONSE_TYPE_MESSAGE);
         $this->setMessage($message);
         return $this;

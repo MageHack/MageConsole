@@ -187,6 +187,7 @@ Usage:
 index index_code
 index index_code1,index_code2
 index all
+list index
 
 update index index_code mode=real_time
 update index index_code mode=manual

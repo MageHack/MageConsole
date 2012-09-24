@@ -43,7 +43,7 @@ class MageHack_MageConsole_Model_Request_Cron
             foreach (array_keys($jobs['jobs']) as $job) {
                 $row = array();
                 $row[] = (string) $job;
-                if (isset($jobs['jobs'][$job]['schedule'])) {
+                if (isset($jobs['jobs'][$job]['schedule']['cron_expr'])) {
                     $row[] = (string) $jobs['jobs'][$job]['schedule']['cron_expr'];
                 } else {
                     $row[] = (string) 'Not set';

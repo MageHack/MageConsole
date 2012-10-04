@@ -31,7 +31,9 @@
                                 type: "POST",
                                 data: $('#terminalForm').serialize(),
                                 dataType: 'json',
-                                url: "<?php echo $this->getSubmitUrl(); ?>",
+                                url: "<?php echo $this->getSubmitUrl(); ?>"
+                            }).error(function (jqXHR, textStatus, errorThrown) {
+                                term.error(jqXHR.responseText);
                             }).done(function (response) {
                                     if(response && response.status == 'OK') {
                                         switch (response.type)

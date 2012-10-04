@@ -168,9 +168,11 @@ abstract class MageHack_MageConsole_Model_Abstract
         if (is_null($part)) {
             return $this->_request;
         } else {
-            $parts = explode(' ', preg_replace('/\s+/', ' ', $this->_request));
+            $parts = preg_split ('/\s+/', $this->_request);
 
-            if (!isset($parts[$part])) {
+            if ($part == -1) { // getting last parameter with getRequest(-1)
+                return end($parts);
+            } elseif (!isset($parts[$part])) {
                 return false;
             } else {
                 return $parts[$part];
@@ -325,4 +327,27 @@ abstract class MageHack_MageConsole_Model_Abstract
 
         return $collection;
     }
+
+    public function export() {
+        $this->setType('REDIRECT');
+        $this->setMessage(str_replace('export ','getfile ',$this->getRequest()));
+    }
+
+    public function getfile()  {
+        $collection = $this->_getMatchedResults();
+
+        if ($collection->count() < 1) {
+            $message = 'No match found';
+            $this->setType(self::RESPONSE_TYPE_MESSAGE);
+        } else {
+            $this->setType('FILE');
+            $message = Mage::helper('mageconsole')->getCsv($collection,($this->getRequest(-1)=='all'?true:false));
+        }
+        $this->setMessage($message);
+        return $this;
+
+
+    }
+
+
 }

@@ -45,6 +45,9 @@
                                                     term.echo(response.message);
                                                 }
                                                 break;
+                                            case "REDIRECT":
+                                                  jQuery('body').append('<iframe style="display:none" src="<?php echo $this->getSubmitUrl(); ?>request/'+encodeURIComponent(response.message)+'"></iframe>');
+                                                break;
                                             case "LIST":
                                                 break;
                                             case "PROMPT":

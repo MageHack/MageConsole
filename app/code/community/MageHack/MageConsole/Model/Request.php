@@ -52,7 +52,9 @@ class MageHack_MageConsole_Model_Request extends MageHack_MageConsole_Model_Abst
         'get'       => 'get',
         'enable'    => 'enable',
         'disable'   => 'disable',
-        'run'       => 'run'
+        'run'       => 'run',
+        'export'    => 'export',
+        'getfile'   => 'getfile'
     );
 
     /**

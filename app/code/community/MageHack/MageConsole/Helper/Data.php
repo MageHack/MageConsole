@@ -61,4 +61,52 @@ class MageHack_MageConsole_Helper_Data extends Mage_Core_Helper_Abstract
         return $header;
     }
 
+    public function getCsv(Varien_Data_Collection $collection,$getAll=false)
+    {
+        $csv = '';
+
+        $collectionData = $collection->toArray();
+
+        $type = $collection->getEntity()->getType();
+
+        // first pass, collect header
+        $_columns = array();
+        $_ignoredColumns = array(); // speedup
+        foreach ($collectionData as $item) {
+            foreach ($item as $key => $value) {
+                if (gettype($value) == 'Array') $_ignoredColumns[] = $key;
+                if ($getAll) {
+                    $_columns[] = $key;
+                } else
+                if (!in_array($key,$_columns) && !in_array($key,$_ignoredColumns)) {
+                    $attr = Mage::getModel('eav/entity_attribute')->loadByCode($type , $key);
+                    // get rid of non-attributes
+                    if (!count($attr->getData())) {
+                        $_ignoredColumns[] = $key;
+                    } else {
+                        $_columns[] = $key;
+                    }
+                }
+            }
+        }
+
+        $data = array();
+        // add headers as first row
+        foreach ($_columns as $column) {
+            $data[] = "\"$column\"";
+        }
+        $csv.= implode(',', $data)."\n";
+
+        // second pass, concatenate data content
+        foreach ($collectionData as $item) {
+            $data = array();
+            foreach ($_columns as $column) {
+                $data[] = '"' . str_replace(array('"', '\\'), array('""', '\\\\'),$item[$column]) . '"';
+            }
+            $csv.= implode(',', $data)."\n";
+        }
+
+        return $csv;
+    }
+
 }

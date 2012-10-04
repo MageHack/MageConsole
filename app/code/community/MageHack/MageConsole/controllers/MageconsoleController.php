@@ -154,8 +154,11 @@ class MageHack_MageConsole_MageconsoleController extends Mage_Adminhtml_Controll
             $response->setType(MageHack_MageConsole_Model_Abstract::RESPONSE_TYPE_ERROR);            
             $response->setMessage($e->getMessage());
         }
-
-        $this->getResponse()->setBody($response->toJson());
+        if ($response->getType()== 'FILE') {
+            $requestDetails =  preg_split ('/\s+/', $params['request']);
+            $this->_prepareDownloadResponse($requestDetails[1].'_export.csv',$response->getMessage());
+        } else
+            $this->getResponse()->setBody($response->toJson());
     }
     
     /**

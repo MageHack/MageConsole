@@ -12,142 +12,157 @@
     <input name="request" type="hidden" value="" id="terminalCmd" />
 </form>
 <div id="terminal"></div>
+<?php if ($helper->isIconEnabled()): ?>
+<div id="terminal_icon" onclick="mc_toggle()"></div>
+<?php endif; ?>
 <script type="text/javascript">
     //<![CDATA[
 
-    //]]>
+    var mcterm = null;
+    var mcwizard = null;
+
+    function mc_disable() {
+        mcterm.pause();
+        mcterm.disable();
+        jQuery('#terminal').hide();
+    }
+
+	function mc_toggle(e,iconclick) {
+		if (mcterm == null) {
+			jQuery(function($, undefined) {
+			mcwizard = new Array();
+			mcterm = $('#terminal').terminal(function(cmd, term) {
+				if (cmd !== '') {
+					if (cmd == 'exit') { mc_disable(); return false; }
+					term.pause();
+					jQuery('#terminalCmd').val(cmd);
+					try {
+						$.ajax({
+							type: "POST",
+							data: $('#terminalForm').serialize(),
+							dataType: 'json',
+							url: "<?php echo $this->getSubmitUrl(); ?>"
+						}).error(function (jqXHR, textStatus, errorThrown) {
+							term.error(jqXHR.responseText);
+						}).done(function (response) {
+								if(response && response.status == 'OK') {
+									switch (response.type)
+									{
+										case "MESSAGE":
+											if( Object.prototype.toString.call(response.message) === '[object Array]' ) {
+												for (var i = 0; i < response.message.length; i++) {
+													term.echo(response.message[i] + '\n');
+												}
+											} else {
+												term.echo(response.message);
+											}
+											break;
+										case "REDIRECT":
+											  jQuery('body').append('<iframe class="mc_download" style="display:none" src="<?php echo $this->getSubmitUrl(); ?>request/'+encodeURIComponent(response.message)+'"></iframe>');
+											  jQuery('.mc_download').remove();
+											break;
+										case "LIST":
+											break;
+										case "PROMPT":
+											var key = '';
+											if(Object.keys(response.message).length == 0) break;
+											mcwizard.mattrs = response.message;
+											for (key in mcwizard.mattrs) break;
+											var attrdata = mcwizard.mattrs[key];
+											mcwizard.storedData  = new Object();
+											mcwizard.actkey = key;
+											mcwizard.formkey = response.id;
+											delete mcwizard.mattrs[key];
+											term.push(mc_prompt,{ prompt:'\t[[b;#eee;#000]'+attrdata['label']+':] ',name:key});
+											break;
+										case "ERROR":
+											term.error(new String(response.message));
+											break;
+									}
+								} else {
+									term.error(new String(response.message));
+								}
+								term.resume();
+							});
+					} catch(e) {
+						term.error(new String(e));
+					}
+				}
+			}, {
+				greetings: 'Magento Console v. 0.1.0',
+				name: 'mageconsole',
+				exit: false,
+				height: 200,
+				tabcompletion: true,
+				onInit: function () {
+					jQuery("html, body").animate({ scrollTop: jQuery(document).height() }, "slow");
+				},
+				prompt: '[[b;#fff;#000]Mage>] ',
+				keydown: function (e) {
+					if (e.which == 67 && e.ctrlKey) { // ctrl-c
+						e.preventDefault();
+						mcterm.set_command('');
+						if (mcwizard.actkey) { mcterm.pop(); delete mcwizard.actkey; }
+						return false;
+					} else if (e.which == 68 && e.ctrlKey) { // ctrl-d
+						e.preventDefault();
+						if (mcwizard.actkey) mc_send();
+						else {
+							if (mcterm.get_command() == '') { mc_disable(); return false; }
+						}
+						return false;
+					} else if (e.which == 77 && (e.ctrlKey) && (e.shiftKey)) { // shift-ctrl-m
+						e.preventDefault();
+						mc_disable();
+						return false;
+					} else if (e.which == 9) { // tab completion
+						if (mcwizard.actkey !== undefined) return false;
+						var command = mcterm.get_command();
+						// console.log(command);
+						jQuery.ajax({
+							type: "GET",
+							dataType: 'json',
+							url: "<?php echo $this->getAutocompleteUrl(); ?>request/"+encodeURIComponent(command),
+						}).done(function (response) {
+								if (response.message == '') return false;
+								var ocwords = command.split(' ');
+								ocwords.splice(-1);
+								var cwords = response.message.split(' ');
+								if (cwords.length === 1) {
+									if (ocwords.join(' ').length > 0)
+										mcterm.set_command(ocwords.join(' ')+' '+cwords[0]+' ');
+									else
+										mcterm.set_command(cwords[0]+' ');
+								} else if (cwords.length > 1) {
+									mcterm.echo(cwords.join('\t'));
+								}
+							});
+						return false;
+					}
+				}});
+		});
+			return false;
+		} else if (mcterm.css('display')=='none') {
+			jQuery('#terminal').show();
+			mcterm.enable();
+			mcterm.resume();
+			jQuery("html, body").animate({ scrollTop: jQuery(document).height() }, "slow");
+			e.preventDefault();
+			return false;
+		} else {
+			mc_disable();
+			e.preventDefault();
+			return false;
+		}
+	}
+
     jQuery(window).keydown(function (e){
-        // TODO this checking is ugly (css instead of enabled)
-        if (e.which == 77 && e.ctrlKey && "undefined" === typeof mcterm) {
-            jQuery(function($, undefined) {
-                mcwizard = new Array();
-                mcterm = $('#terminal').terminal(function(cmd, term) {
-                    if (cmd !== '') {
-                        if (cmd == 'exit') { jt_stop(); return false; }
-                        term.pause();
-                        jQuery('#terminalCmd').val(cmd);
-                        try {
-                            $.ajax({
-                                type: "POST",
-                                data: $('#terminalForm').serialize(),
-                                dataType: 'json',
-                                url: "<?php echo $this->getSubmitUrl(); ?>"
-                            }).error(function (jqXHR, textStatus, errorThrown) {
-                                term.error(jqXHR.responseText);
-                            }).done(function (response) {
-                                    if(response && response.status == 'OK') {
-                                        switch (response.type)
-                                        {
-                                            case "MESSAGE":
-                                                if( Object.prototype.toString.call(response.message) === '[object Array]' ) {
-                                                    for (var i = 0; i < response.message.length; i++) {
-                                                        term.echo(response.message[i] + '\n');
-                                                    }
-                                                } else {
-                                                    term.echo(response.message);
-                                                }
-                                                break;
-                                            case "REDIRECT":
-                                                  jQuery('body').append('<iframe style="display:none" src="<?php echo $this->getSubmitUrl(); ?>request/'+encodeURIComponent(response.message)+'"></iframe>');
-                                                break;
-                                            case "LIST":
-                                                break;
-                                            case "PROMPT":
-                                                var key = '';
-                                                if(Object.keys(response.message).length == 0) break;
-                                                mcwizard.mattrs = response.message;
-                                                for (key in mcwizard.mattrs) break;
-                                                var attrdata = mcwizard.mattrs[key];
-                                                mcwizard.storedData  = new Object();
-                                                mcwizard.actkey = key;
-                                                mcwizard.formkey = response.id;
-                                                delete mcwizard.mattrs[key];
-                                                term.push(jt_prompt,{ prompt:'\t[[b;#eee;#000]'+attrdata['label']+':] ',name:key});
-                                                break;
-                                            case "ERROR":
-                                                term.error(new String(response.message));
-                                                break;
-                                        }
-                                    } else {
-                                        term.error(new String(response.message));
-                                    }
-                                    term.resume();
-                                });
-                        } catch(e) {
-                            term.error(new String(e));
-                        }
-                    }
-                }, {
-                    greetings: 'Magento Console v. 0.1.0',
-                    name: 'mageconsole',
-                    exit: false,
-                    height: 200,
-                    tabcompletion: true,
-                    onInit: function () {
-                        jQuery("html, body").animate({ scrollTop: jQuery(document).height() }, "slow");
-                    },
-                    prompt: '[[b;#fff;#000]Mage>] ',
-                    keydown: function (e) {
-                        if (e.which == 67 && e.ctrlKey) { // ctrl-c
-                            e.preventDefault();
-                            //alert('ctrl-c placeholder');
-                            mcterm.set_command('');
-                            if (mcwizard.actkey) { mcterm.pop(); delete mcwizard.actkey; }
-                            return false;
-                        } else if (e.which == 68 && e.ctrlKey) { // ctrl-d
-                            e.preventDefault();
-                            if (mcwizard.actkey) jt_send();
-                            else {
-                                if (mcterm.get_command() == '') { jt_stop(); return false; }
-                            }
-//                    console.log('save');
-                            // TODO save()
-                            return false;
-                        } else if (e.which == 77 && (e.ctrlKey) && (e.shiftKey)) { // shift-ctrl-m
-                            e.preventDefault();
-                            jt_stop();
-                            return false;
-                        } else if (e.which == 9) { // tab completion
-                            if (mcwizard.actkey !== undefined) return false;
-                            var command = mcterm.get_command();
-                            // console.log(command);
-                            jQuery.ajax({
-                                type: "GET",
-                                dataType: 'json',
-                                url: "<?php echo $this->getAutocompleteUrl(); ?>request/"+encodeURIComponent(command),
-                            }).done(function (response) {
-                                    if (response.message == '') return false;
-                                    var ocwords = command.split(' ');
-                                    ocwords.splice(-1);
-                                    var cwords = response.message.split(' ');
-                                    if (cwords.length === 1) {
-                                        if (ocwords.join(' ').length > 0)
-                                            mcterm.set_command(ocwords.join(' ')+' '+cwords[0]+' ');
-                                        else
-                                            mcterm.set_command(cwords[0]+' ');
-                                    } else if (cwords.length > 1) {
-                                        mcterm.echo(cwords.join('\t'));
-                                    }
-                                });
-                            return false;
-                        }
-                    }});
-            });
-        }
-        else
-        if (e.which == 77 && e.ctrlKey && mcterm.css('display')=='none') {
-            jQuery('#terminal').show();
-            mcterm.enable();
-            mcterm.resume();
-            jQuery("html, body").animate({ scrollTop: jQuery(document).height() }, "slow");
-            e.preventDefault();
-            // TODO we have to check this why we have to throw this, it's OK for the demo
-            throw new Exception();
-            return false;
+        if (e.which == 77 && e.ctrlKey) {
+	        mc_toggle();
         }
     });
 
-    function jt_send () {
+    function mc_send () {
         mcterm.pause();
         if (mcwizard.storedData.length < 1) { mcterm.pop(); mcterm.resume(); return false; }
         jQuery.ajax({
@@ -163,18 +178,12 @@
         delete mcwizard.actkey;
     }
 
-    function jt_stop() {
-        mcterm.pause();
-        mcterm.disable();
-        jQuery('#terminal').hide();
-    }
-
-    function jt_prompt (cmd) {
+    function mc_prompt (cmd) {
         var oldkey = mcwizard.actkey;
         mcwizard.storedData[oldkey] = cmd;
 
         if(Object.keys(mcwizard.mattrs).length == 0) {
-            jt_send();
+            mc_send();
             return false;
         }
         var key = '';
@@ -184,7 +193,7 @@
         delete mcwizard.mattrs[key];
         mcterm.pop();
         if (attrdata['values'].length == 0)
-            mcterm.push(jt_prompt,{ prompt:'\t[[b;#eee;#000]'+attrdata['label']+':] ',name: key});
+            mcterm.push(mc_prompt,{ prompt:'\t[[b;#eee;#000]'+attrdata['label']+':] ',name: key});
         else {
             var vals = '';
             for (var i in attrdata['values']) {
@@ -194,7 +203,7 @@
                     vals += item['value']+':'+item['label'];
                 }
             }
-            mcterm.push(jt_prompt,{ prompt:'\t[[b;#eee;#000]'+attrdata['label']+'('+vals+'):] ',name: key});
+            mcterm.push(mc_prompt,{ prompt:'\t[[b;#eee;#000]'+attrdata['label']+'('+vals+'):] ',name: key});
         }
     }
 
@@ -210,24 +219,23 @@
             }
         });
 
-
         jQuery(document.body).on("mousedown", "div", function (e) {
             if (e.target.id == 'terminal' && !$dragging) {
                 jQuery(document.body).attr('unselectable','on').css('MozUserSelect','none');
                 $originalY = e.screenY;
                 $originalH = jQuery(e.target).height();
                 $dragging = jQuery(e.target);
-                console.log($originalY);
-                console.log($originalH);
             }
         });
 
         jQuery(document.body).on("mouseup", function (e) {
-            $dragging = null;
-            jQuery(document.body).attr('unselectable','off').css('MozUserSelect','');
+        	if ($dragging) {
+	            $dragging = null;
+    	        jQuery(document.body).attr('unselectable','off').css('MozUserSelect','');
+            }
         });
     });
 
-
+    //]]>
 </script>
 <?php endif; ?>

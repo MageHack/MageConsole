@@ -19,6 +19,17 @@ class MageHack_MageConsole_Helper_Data extends Mage_Core_Helper_Abstract
         return $enabled;
     }
 
+    /**
+     * Retrieve status
+     *
+     * @return  boolean
+     */
+    public function isIconEnabled()
+    {
+        $enabled = (Mage::getStoreConfig('admin/mageconsole/icon_enabled') == 1) ? true : false;
+        return $enabled;
+    }
+
     public function createTable(array $data, $showHeader = true, $columnWidth = array('columnWidths' => array(10, 20)))
     {
         $tableConfig = array(

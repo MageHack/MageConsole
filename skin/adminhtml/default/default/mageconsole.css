@@ -72,3 +72,12 @@
 .terminal a:hover {
     color: red;
 }
+
+#terminal_icon {
+	background: url("images/mageconsole/icon.gif") no-repeat scroll 0% 0% transparent;
+	height: 32px; 
+	width: 32px; 
+	position: fixed; 
+	bottom: -9px; 
+	right: 0px;
+}

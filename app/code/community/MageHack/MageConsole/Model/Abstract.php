@@ -25,32 +25,14 @@ abstract class MageHack_MageConsole_Model_Abstract
      *
      * @var  array
      */
-    protected $_entities = array(
-        'customer'      => 'customer',
-        'address'       => 'customer_address',
-        'category'      => 'catalog_category',
-        'product'       => 'catalog_product',
-        'order'         => 'order',
-        'invoice'       => 'invoice',
-        'creditmemo'    => 'creditmemo',
-        'shipment'      => 'shipment',
-    );
+    protected $_entities = array();
 
     /**
      * Model mapping
      *
      * @var  array
      */
-    protected $_models = array(
-        'customer'          => 'customer/customer',
-        'customer_address'  => 'customer/address',
-        'catalog_category'  => 'catalog/category',
-        'catalog_product'   => 'catalog/product',
-        'order'             => 'sales/order',
-        'invoice'           => 'sales/order_invoice',
-        'creditmemo'        => 'sales/order_creditmemo',
-        'shipment'          => 'sales/order_shipment',
-    );
+    protected $_models = array();
 
     /**
      * Operators
@@ -101,6 +83,44 @@ abstract class MageHack_MageConsole_Model_Abstract
      * @var     string
      */
     protected $_message;
+
+    public function getModelMapping($model)
+    {
+        if (count($this->_models) <= 0) {
+            //parse models out of config
+            $modelMapping = Mage::getStoreConfig('mageconsole/endpoints/models');
+            foreach ($modelMapping as $k => $v):
+                $this->_models[$k] = $v;
+            endforeach;
+        }
+
+        if (is_null($model)) {
+            return $this->_models;
+        }
+
+        if (array_key_exists($model, $this->_models)) {
+            return $this->_models[$model];
+        }
+    }
+
+    public function getEntityMapping($entity)
+    {
+        if (count($this->_entities) <= 0) {
+            //parse entities out of config
+            $entityMapping = Mage::getStoreConfig('mageconsole/endpoints/entities');
+            foreach ($entityMapping as $k => $v):
+                $this->_entities[$k] = $v;
+            endforeach;
+        }
+
+        if (is_null($entity)) {
+            return $this->_entities;
+        }
+
+        if (array_key_exists($entity, $this->_entities)) {
+            return $this->_entities[$entity];
+        }
+    }
 
     /**
      * Set message

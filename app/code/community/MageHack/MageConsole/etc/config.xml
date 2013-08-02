@@ -84,6 +84,61 @@
     </adminhtml>
     <default>
         <mageconsole>
+            <endpoints>
+                <entities>
+                    <customer>customer</customer>
+                    <address>customer_address</address>
+                    <category>catalog_category</category>
+                    <product>catalog_product</product>
+                    <order>order</order>
+                    <invoice>invoice</invoice>
+                    <creditmemo>creditmemo</creditmemo>
+                    <shipment>shipment</shipment>
+                </entities>
+                <models>
+                    <customer>customer/customer</customer>
+                    <customer_address>customer/address</customer_address>
+                    <catalog_category>catalog/category</catalog_category>
+                    <catalog_product>catalog/product</catalog_product>
+                    <order>sales/order</order>
+                    <invoice>sales/order_invoice</invoice>
+                    <creditmemo>sales/order_creditmemo</creditmemo>
+                    <shipment>sales/order_shipment</shipment>
+                </models>
+            </endpoints>
+            <requests>
+                <entities>
+                    <category>mageconsole/request_catalog_category</category>
+                    <product>mageconsole/request_catalog_product</product>
+                    <customer>mageconsole/request_customer</customer>
+                    <order>mageconsole/request_sales_order</order>
+                    <invoice>mageconsole/request_sales_invoice</invoice>
+                    <creditmemo>mageconsole/request_sales_creditmemo</creditmemo>
+                    <shipment>mageconsole/request_sales_shipment</shipment>
+                    <cache>mageconsole/request_cache</cache>
+                    <config>mageconsole/request_config</config>
+                    <store>mageconsole/request_store</store>
+                    <help>mageconsole/request_help</help>
+                    <index>mageconsole/request_index</index>
+                    <cron>mageconsole/request_cron</cron>
+                </entities>
+                <actions>
+                    <add>add</add>
+                    <update>update</update>
+                    <remove>remove</remove>
+                    <show>show</show>
+                    <list>listing</list>
+                    <clear>clear</clear>
+                    <help>help</help>
+                    <set>set</set>
+                    <get>get</get>
+                    <enable>enable</enable>
+                    <disable>disable</disable>
+                    <run>run</run>
+                    <export>export</export>
+                    <getfile>getfile</getfile>
+                </actions>
+            </requests>
         </mageconsole>
     </default>
 </config>

@@ -19,43 +19,14 @@ class MageHack_MageConsole_Model_Request extends MageHack_MageConsole_Model_Abst
      *
      * @var array
      */
-    var $_entityMapping = array(
-        'category'  => 'mageconsole/request_catalog_category',
-        'product'   => 'mageconsole/request_catalog_product',
-        'customer'  => 'mageconsole/request_customer',
-        'order'     => 'mageconsole/request_sales_order',
-        'invoice'   => 'mageconsole/request_sales_invoice',
-        'creditmemo' => 'mageconsole/request_sales_creditmemo',
-        'shipment'  => 'mageconsole/request_sales_shipment',
-        'cache'     => 'mageconsole/request_cache',
-        'config'    => 'mageconsole/request_config',
-        'store'     => 'mageconsole/request_store',
-        ''          => 'mageconsole/request_help',
-        'index'     => 'mageconsole/request_index',
-        'cron'      => 'mageconsole/request_cron'
-    );
+    var $_entityMapping = array();
 
     /**
      * Entity mapping
      *
      * @var array
      */
-    var $_actionMapping = array(
-        'add'       => 'add',
-        'update'    => 'update',
-        'remove'    => 'remove',
-        'show'      => 'show',
-        'list'      => 'listing',
-        'clear'     => 'clear',
-        'help'      => 'help',
-        'set'       => 'set',
-        'get'       => 'get',
-        'enable'    => 'enable',
-        'disable'   => 'disable',
-        'run'       => 'run',
-        'export'    => 'export',
-        'getfile'   => 'getfile'
-    );
+    var $_actionMapping = array();
 
     /**
      * Get entity mapping
@@ -64,6 +35,16 @@ class MageHack_MageConsole_Model_Request extends MageHack_MageConsole_Model_Abst
      * */
     public function getEntityMapping($entity = null)
     {
+        /**
+         * Check if we need to set the entityMapping
+         */
+        if (count($this->_entityMapping) <= 0) {
+            $entityMapping = Mage::getStoreConfig('mageconsole/requests/entities');
+            foreach ($entityMapping as $k => $v):
+                $this->_entityMapping[$k] = $v;
+            endforeach;            
+        }
+
         if (is_null($entity)) {
             return $this->_entityMapping;
         }
@@ -82,6 +63,16 @@ class MageHack_MageConsole_Model_Request extends MageHack_MageConsole_Model_Abst
      * */
     public function getActionMapping($action = null)
     {
+        /**
+         * Check if we need to set the entityMapping
+         */
+        if (count($this->_actionMapping) <= 0) {
+            $actionMapping = Mage::getStoreConfig('mageconsole/requests/actions');
+            foreach ($actionMapping as $k => $v):
+                $this->_actionMapping[$k] = $v;
+            endforeach;            
+        }
+
         if (is_null($action)) {
             return $this->_actionMapping;
         }

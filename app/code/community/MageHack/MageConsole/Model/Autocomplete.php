@@ -73,8 +73,9 @@ class MageHack_MageConsole_Model_Autocomplete extends MageHack_MageConsole_Model
         foreach (Mage::getResourceModel('eav/entity_type_collection') as $item) {
             $entityIds[$item->getEntityTypeCode()] = $item->getId();
         }
-                        
-        $entityType = $this->_entities[$entity];                
+        
+
+        $entityType = $this->getEntityMapping($entity);
         $entityId   = $entityIds[$entityType];
             
         /* EAV */                        
@@ -88,7 +89,7 @@ class MageHack_MageConsole_Model_Autocomplete extends MageHack_MageConsole_Model
         }
         
         /* Flat */
-        $model = Mage::getResourceModel($this->_models[$entityType]);
+        $model = Mage::getResourceModel($this->getModelMapping($entityType));
         
         if ($model instanceof Mage_Eav_Model_Entity_Abstract) {
             $table = $model->getEntityTable();              

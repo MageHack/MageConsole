@@ -19,7 +19,9 @@ class MageHack_MageConsole_Model_Request extends MageHack_MageConsole_Model_Abst
      *
      * @var array
      */
-    var $_entityMapping = array();
+    var $_entityMapping = array(
+        ''          => 'mageconsole/request_help'
+    );
 
     /**
      * Entity mapping
@@ -38,7 +40,7 @@ class MageHack_MageConsole_Model_Request extends MageHack_MageConsole_Model_Abst
         /**
          * Check if we need to set the entityMapping
          */
-        if (count($this->_entityMapping) <= 0) {
+        if (count($this->_entityMapping) <= 1) {
             $entityMapping = Mage::getStoreConfig('mageconsole/requests/entities');
             foreach ($entityMapping as $k => $v):
                 $this->_entityMapping[$k] = $v;

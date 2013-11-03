@@ -73,4 +73,19 @@ USAGE;
         $this->setMessage($message);
         return $this;
     }
+
+    /**
+     * Get all commands for tab completion
+     *
+     * @return array
+     */
+    public function allCommands()
+    {
+        return array(
+            'list cron'
+        );
+
+    }
+
+
 }

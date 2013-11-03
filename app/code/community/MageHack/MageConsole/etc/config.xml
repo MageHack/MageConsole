@@ -137,6 +137,7 @@
                     <run>run</run>
                     <export>export</export>
                     <getfile>getfile</getfile>
+                    <index>index</index>
                 </actions>
             </requests>
         </mageconsole>

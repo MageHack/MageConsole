@@ -13,6 +13,17 @@ class MageHack_MageConsole_Block_Adminhtml_Terminal extends Mage_Adminhtml_Block
      * @return string
      */
 
+    public function getInitUrl()
+    {
+        return Mage::helper('adminhtml')->getUrl('adminhtml/mageconsole/init');
+    }
+
+    /**
+     * get Command submission URL
+     *
+     * @return string
+     */
+
     public function getSubmitUrl()
     {
         return Mage::helper('adminhtml')->getUrl('adminhtml/mageconsole/submit');

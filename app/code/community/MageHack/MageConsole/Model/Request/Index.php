@@ -5,8 +5,8 @@
  * @package     MageHack_MageConsole
  * @license     http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
-class MageHack_MageConsole_Model_Request_Index extends
-MageHack_MageConsole_Model_Abstract {
+class MageHack_MageConsole_Model_Request_Index extends MageHack_MageConsole_Model_Abstract
+{
 
     protected $_attrToShow = array(
         'process_id' => 'process_id',
@@ -184,9 +184,9 @@ MageHack_MageConsole_Model_Abstract {
         $message = <<<USAGE
    
 Usage: 
-index index_code
-index index_code1,index_code2
-index all
+update index index_code
+update index index_code1,index_code2
+update index all
 list index
 
 update index index_code mode=real_time
@@ -249,6 +249,32 @@ USAGE;
             }
         }
         return $processes;
+    }
+
+    /**
+     * Get all commands for tab completion
+     *
+     * @return array
+     */
+    public function allCommands()
+    {
+        $codes = array('cpa','catalog_product_attribute',
+            'cpp', 'catalog_product_price',
+            'cu', 'catalog_url',
+            'cpf', 'catalog_product_flat',
+            'ccf', 'catalog_category_flat',
+            'ccp', 'catalog_category_product',
+            'csf', 'catalogsearch_fulltext',
+            'cis', 'cataloginventory_stock',
+            'ts', 'tag_summary');
+        $arr =  array(
+            'update index all',
+            'list index'
+        );
+        foreach ($codes as $code) {
+            $arr[] = 'update index '.$code;
+        }
+        return $arr;
     }
 
 }

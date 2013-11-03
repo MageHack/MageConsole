@@ -126,7 +126,10 @@ class MageHack_MageConsole_Model_Request_Catalog_Category extends MageHack_MageC
                 $value = array();
 
                 foreach ($this->_columns as $attr => $width) {
-                    $value[$attr] = $row[$attr];
+                    if (isset($row[$attr]))
+                        $value[$attr] = $row[$attr];
+                    else
+                        $value[$attr] = '';
                 }
 
                 $_values[] = $value;
@@ -149,7 +152,7 @@ class MageHack_MageConsole_Model_Request_Catalog_Category extends MageHack_MageC
     public function help() {
         $message = <<<USAGE
 Usage: 
-list category where <attribute> <op> value
+list category [where <attribute> <op> value]
 show category where <attribute> <op> value
 remove category where <attribute> <op> value
 
@@ -167,5 +170,22 @@ USAGE;
         $this->setMessage($message);
         return $message;
     }
+
+    /**
+     * Get all commands for tab completion
+     *
+     * @return array
+     */
+    public function allCommands()
+    {
+        return array(
+            'list category',
+            'list category where',
+            'show category where',
+            'remove category where'
+        );
+
+    }
+
 
 }

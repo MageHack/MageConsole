@@ -48,4 +48,11 @@ interface MageHack_MageConsole_Model_Request_Interface
      * @return  MageHack_MageConsole_Model_Abstract
      */
     public function help();
+
+    /**
+     * Get all commands for tab completion
+     *
+     * @return array
+     */
+    public function allCommands();
 }

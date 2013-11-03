@@ -99,4 +99,18 @@ class MageHack_MageConsole_Model_Request_Store extends MageHack_MageConsole_Mode
         $this->setMessage('help was requested for a store command - this is the help message');
         return $this;
     }
+
+    /**
+     * Get all commands for tab completion
+     *
+     * @return array
+     */
+    public function allCommands()
+    {
+        return array(
+            'list store',
+            'get store'
+        );
+    }
+
 }

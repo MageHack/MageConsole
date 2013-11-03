@@ -120,4 +120,9 @@ class MageHack_MageConsole_Helper_Data extends Mage_Core_Helper_Abstract
         return $csv;
     }
 
+    public function getRequests()
+    {
+        return array_values(Mage::getStoreConfig('mageconsole/requests/actions'));
+    }
+
 }

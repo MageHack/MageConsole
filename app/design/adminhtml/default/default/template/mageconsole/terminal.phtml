@@ -15,16 +15,29 @@
 <?php if ($helper->isIconEnabled()): ?>
 <div id="terminal_icon" onclick="mc_toggle()"></div>
 <?php endif; ?>
+<style>
+    .compl { background-color: #333; }
+    .terminal hr { border: 1px solid #777; height: 1px; }
+</style>
 <script type="text/javascript">
     //<![CDATA[
 
     var mcterm = null;
     var mcwizard = null;
+    var commandList = null;
+
+    function show_clist(list) {
+        mcterm.echo('<hr/><span class="compl">'+list.join('</span>\t<span  class="compl">')+'</span>',{raw:true});
+    }
 
     function mc_disable() {
-        mcterm.pause();
-        mcterm.disable();
-        jQuery('#terminal').hide();
+        if (mcterm) {
+            mcterm.pause();
+            mcterm.disable();
+            jQuery('#terminal').hide();
+        } else {
+            console.log('exit');
+        }
     }
 
 	function mc_toggle(e,iconclick) {
@@ -96,8 +109,46 @@
 				tabcompletion: true,
 				onInit: function () {
 					jQuery("html, body").animate({ scrollTop: jQuery(document).height() }, "slow");
+                    $.ajax({
+                        type: "POST",
+                        data: $('#terminalForm').serialize(),
+                        dataType: 'json',
+                        url: "<?php echo $this->getInitUrl(); ?>"
+                    }).error(function (jqXHR, textStatus, errorThrown) {
+                            term.error(jqXHR.responseText);
+                    }).done(function (response) {
+                        if(response && response.status == 'OK') {
+                            commandList = response.message;
+/*                            mcterm.commands(response.message); */
+                        }
+                    });
 				},
 				prompt: '[[b;#fff;#000]Mage>] ',
+                completion: function (term,str,callback) {
+                    var command = mcterm.get_command();
+                    // console.log(command);
+                    if (command == '') {
+                        show_clist(commandList);
+                        return;
+                    }
+                    var clen = command.length;
+                    var finishedWords = command.substring(0,command.lastIndexOf(' '));
+                    var a = [];
+                    var index, value;
+                    for (index = 0; index < commandList.length; ++index) {
+                        value = commandList[index];
+                        if (value.substring(0, clen) === command && value != command) {
+                            if (finishedWords)
+                                a.push(value.substr(finishedWords.length+1));
+                            else
+                                a.push(value);
+                        }
+                    }
+                    if (str && a.length) {
+                        show_clist(a);
+                        callback(a);
+                    }
+                },
 				keydown: function (e) {
 					if (e.which == 67 && e.ctrlKey) { // ctrl-c
 						e.preventDefault();
@@ -111,54 +162,32 @@
 							if (mcterm.get_command() == '') { mc_disable(); return false; }
 						}
 						return false;
-					} else if (e.which == 77 && (e.ctrlKey) && (e.shiftKey)) { // shift-ctrl-m
-						e.preventDefault();
-						mc_disable();
-						return false;
-					} else if (e.which == 9) { // tab completion
-						if (mcwizard.actkey !== undefined) return false;
-						var command = mcterm.get_command();
-						// console.log(command);
-						jQuery.ajax({
-							type: "GET",
-							dataType: 'json',
-							url: "<?php echo $this->getAutocompleteUrl(); ?>request/"+encodeURIComponent(command),
-						}).done(function (response) {
-								if (response.message == '') return false;
-								var ocwords = command.split(' ');
-								ocwords.splice(-1);
-								var cwords = response.message.split(' ');
-								if (cwords.length === 1) {
-									if (ocwords.join(' ').length > 0)
-										mcterm.set_command(ocwords.join(' ')+' '+cwords[0]+' ');
-									else
-										mcterm.set_command(cwords[0]+' ');
-								} else if (cwords.length > 1) {
-									mcterm.echo(cwords.join('\t'));
-								}
-							});
-						return false;
 					}
 				}});
-		});
+		    });
 			return false;
 		} else if (mcterm.css('display')=='none') {
 			jQuery('#terminal').show();
 			mcterm.enable();
 			mcterm.resume();
 			jQuery("html, body").animate({ scrollTop: jQuery(document).height() }, "slow");
-			e.preventDefault();
+			if (e) e.preventDefault();
 			return false;
 		} else {
 			mc_disable();
-			e.preventDefault();
 			return false;
 		}
 	}
 
-    jQuery(window).keydown(function (e){
-        if (e.which == 77 && e.ctrlKey) {
-	        mc_toggle();
+    jQuery(document).keypress(function (e) {
+        if (!mcterm || mcterm.css('display')=='none') {
+            if (e.which == 77 && (e.ctrlKey) && (e.shiftKey)) { // shift-ctrl-m
+                e.preventDefault();
+                mc_toggle();
+                return false;
+            }
+        } else {
+            mc_disable();
         }
     });
 

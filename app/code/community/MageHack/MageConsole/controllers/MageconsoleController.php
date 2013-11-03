@@ -123,7 +123,25 @@ class MageHack_MageConsole_MageconsoleController extends Mage_Adminhtml_Controll
 
         $this->getResponse()->setBody($response->toJson());        
     }
-    
+
+    public function initAction()
+    {
+        $params = $this->getRequest()->getParams();
+        $reqs = Mage::getStoreConfig('mageconsole/requests/entities');
+        $arr = array();
+        foreach ($reqs as $en => $mn) {
+            $m = Mage::getModel($mn);
+            foreach ($m->allCommands() as $cmd) {
+                $arr[] = $cmd;
+            }
+        }
+        $response   = new Varien_Object();
+        $response->setStatus('OK');
+        $response->setRequest($params['request']);
+        $response->setMessage($arr);
+        $this->getResponse()->setBody($response->toJson());
+    }
+
     /**
      * Submit action
      *

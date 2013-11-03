@@ -162,4 +162,18 @@ class MageHack_MageConsole_Model_Request_Customer
         $this->setMessage('help was requested for a product - this is the help message');
         return $this;
     }
+
+    /**
+     * Get all commands for tab completion
+     *
+     * @return array
+     */
+    public function allCommands()
+    {
+        return array(
+            'list customer'
+        );
+
+    }
+
 }

@@ -145,4 +145,21 @@ class MageHack_MageConsole_Model_Request_Sales_Creditmemo
         $this->setMessage('help was requested for a product - this is the help message');
         return $this;
     }
+
+    /**
+     * Get all commands for tab completion
+     *
+     * @return array
+     */
+    public function allCommands()
+    {
+        return array(
+            'list creditmemo where',
+            'show creditmemo where',
+            'remove creditmemo where',
+            'add creditmemo'
+        );
+
+    }
+
 }

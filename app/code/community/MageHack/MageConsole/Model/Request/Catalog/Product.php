@@ -148,7 +148,7 @@ class MageHack_MageConsole_Model_Request_Catalog_Product extends MageHack_MageCo
      * @param   Mage_Catalog_Model_Resource_Product_Collection $collection
      * @return  Mage_Catalog_Model_Resource_Product_Collection
      */
-    protected function _prepareCollection(Mage_Catalog_Model_Resource_Product_Collection $collection) {
+    protected function _prepareCollection($collection) {
 
         foreach ($this->getConditions() as $condition) {
             $collection->addFieldToFilter($condition['attribute'], array($condition['operator'] => $condition['value']));
@@ -177,7 +177,10 @@ class MageHack_MageConsole_Model_Request_Catalog_Product extends MageHack_MageCo
                 $value = array();
 
                 foreach ($this->_columns as $attr => $width) {
-                    $value[$attr] = $row[$attr];
+                    if (isset($row[$attr]))
+                        $value[$attr] = $row[$attr];
+                    else
+                        $value[$attr] = '';
                 }
 
                 $_values[] = $value;
@@ -221,6 +224,22 @@ USAGE;
         $this->setType(self::RESPONSE_TYPE_MESSAGE);
         $this->setMessage($message);
         return $message;
+    }
+
+    /**
+     * Get all commands for tab completion
+     *
+     * @return array
+     */
+    public function allCommands()
+    {
+        return array(
+            'list product where',
+            'show product where',
+            'remove product where',
+            'add product'
+        );
+
     }
 
 }

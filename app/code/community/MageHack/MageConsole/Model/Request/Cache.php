@@ -222,4 +222,20 @@ class MageHack_MageConsole_Model_Request_Cache
         $this->setMessage($message);
         return $this;
     }
+
+    /**
+     * Get all commands for tab completion
+     *
+     * @return array
+     */
+    public function allCommands()
+    {
+        return array(
+            'clear cache',
+            'enable cache',
+            'disable cache',
+            'list cache'
+        );
+
+    }
 }

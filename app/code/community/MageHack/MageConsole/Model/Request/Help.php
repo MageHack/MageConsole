@@ -34,4 +34,21 @@ class MageHack_MageConsole_Model_Request_Help extends MageHack_MageConsole_Model
         $this->setMessage($message);
         return $this;
     }
+
+
+    /**
+     * Get all commands for tab completion
+     *
+     * @return array
+     */
+    public function allCommands()
+    {
+        $arr = array('help');
+        $list = array_keys($this->_getRequestModel()->getEntityMapping());
+        foreach ($list as $cmd) {
+            $arr[] = 'help '.$cmd;
+        }
+        return $arr;
+    }
+
 }

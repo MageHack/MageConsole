@@ -145,4 +145,21 @@ class MageHack_MageConsole_Model_Request_Sales_Shipment
         $this->setMessage('help was requested for a product - this is the help message');
         return $this;
     }
+
+    /**
+     * Get all commands for tab completion
+     *
+     * @return array
+     */
+    public function allCommands()
+    {
+        return array(
+            'list shipment where',
+            'show shipment where',
+            'remove shipment where',
+            'add shipment'
+        );
+
+    }
+
 }

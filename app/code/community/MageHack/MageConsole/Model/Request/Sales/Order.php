@@ -166,4 +166,22 @@ class MageHack_MageConsole_Model_Request_Sales_Order
         $this->setMessage('help was requested for a product - this is the help message');
         return $this;
     }
+
+    /**
+     * Get all commands for tab completion
+     *
+     * @return array
+     */
+    public function allCommands()
+    {
+        return array(
+            'list order where',
+            'show order where',
+            'remove order where',
+            'add order'
+        );
+
+    }
+
+
 }

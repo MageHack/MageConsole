@@ -146,4 +146,21 @@ class MageHack_MageConsole_Model_Request_Sales_Invoice
         $this->setMessage('help was requested for a product - this is the help message');
         return $this;
     }
+
+    /**
+     * Get all commands for tab completion
+     *
+     * @return array
+     */
+    public function allCommands()
+    {
+        return array(
+            'list invoice where',
+            'show invoice where',
+            'remove invoice where',
+            'add invoice'
+        );
+
+    }
+
 }

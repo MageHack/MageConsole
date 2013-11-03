@@ -44,6 +44,8 @@ class MageHack_MageConsole_Model_Request_Cache
 
         if (!$collection->count()) {
             $message = 'This is strange, we did not find any cache types.';
+            $this->setType(self::RESPONSE_TYPE_MESSAGE);
+            $this->setMessage($message);
         } else if ($collection->count() > 0) {
             $values = $collection->toArray();
             if (is_array($values) && $values['totalRecords'] > 0) {
@@ -52,12 +54,17 @@ class MageHack_MageConsole_Model_Request_Cache
                         $_values[] = (array_intersect_key($row, $this->_attrToShow));
                     }
                 }
-                $message = Mage::helper('mageconsole')->createTable($_values, true, $this->_columnWidths);
+                if (Mage::getStoreConfig('admin/mageconsole/html_tables') != 1) {
+                    $this->setType(self::RESPONSE_TYPE_MESSAGE);
+                    $message = Mage::helper('mageconsole')->createTable($_values, true, $this->_columnWidths);
+                    $this->setMessage($message);
+                } else {
+                    $this->setMessage($_values);
+                    $this->setType(self::RESPONSE_TYPE_LIST);
+                }
             }
         }
 
-        $this->setType(self::RESPONSE_TYPE_MESSAGE);
-        $this->setMessage($message);
         return $this;
     }
 

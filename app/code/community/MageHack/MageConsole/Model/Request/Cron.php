@@ -38,6 +38,8 @@ class MageHack_MageConsole_Model_Request_Cron
 
         if (!count($jobs['jobs'])) {
             $message = 'This is strange, we did not find any cron jobs.';
+            $this->setType(self::RESPONSE_TYPE_MESSAGE);
+            $this->setMessage($message);
         } else {
             $_values = array();
             foreach (array_keys($jobs['jobs']) as $job) {
@@ -50,11 +52,16 @@ class MageHack_MageConsole_Model_Request_Cron
                 }
                 $_values[] = $row;
             }
-            $message = Mage::helper('mageconsole')->createTable($_values, false, array('columnWidths' => array_values($this->_columns)));
+            if (Mage::getStoreConfig('admin/mageconsole/html_tables') != 1) {
+                $this->setType(self::RESPONSE_TYPE_MESSAGE);
+                $message = Mage::helper('mageconsole')->createTable($_values, true, array('columnWidths' => array_values($this->_columns)));
+                $this->setMessage($message);
+            } else {
+                $this->setMessage($_values);
+                $this->setType(self::RESPONSE_TYPE_LIST);
+            }
         }
 
-        $this->setType(self::RESPONSE_TYPE_MESSAGE);
-        $this->setMessage($message);
         return $this;
     }
 

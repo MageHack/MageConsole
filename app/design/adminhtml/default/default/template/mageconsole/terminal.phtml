@@ -18,6 +18,9 @@
 <style>
     .compl { background-color: #333; }
     .terminal hr { border: 1px solid #777; height: 1px; }
+    .terminal .ttable { border-collapse: collapse; }
+    .terminal .ttable td { border: 1px solid #777; padding: 1px; }
+    .terminal .ttable th { border: 1px solid #777; padding: 1px; color:white; }
 </style>
 <script type="text/javascript">
     //<![CDATA[
@@ -75,7 +78,24 @@
 											  jQuery('.mc_download').remove();
 											break;
 										case "LIST":
-											break;
+                                            var json = response.message;
+                                            if (json.length) {
+                                                var headers = Object.keys(json[0]);
+                                                var table = $('<table class="ttable">');
+                                                var tr = $('<tr/>');
+                                                $(headers).each (function () { tr.append("<th>"+this+"</th>"); });
+                                                table.append(tr);
+                                                $(json).each(function () {
+                                                    var tr = $('<tr/>');
+                                                    for (var i=0;i<headers.length;i++) {
+                                                        console.log(headers[i]);
+                                                        tr.append("<td>" + this[headers[i]] + "</td>");
+                                                    }
+                                                    table.append(tr);
+                                                });
+                                                term.echo('<table class="ttable">'+table.html()+'</table>',{raw:true});
+                                            }
+                                            break;
 										case "PROMPT":
 											var key = '';
 											if(Object.keys(response.message).length == 0) break;
@@ -181,15 +201,15 @@
 
     jQuery(document).keypress(function (e) {
         if (e.which == 77 && (e.ctrlKey) && (e.shiftKey)) { // shift-ctrl-m
-        	if (!mcterm || mcterm.css('display')=='none') {
+            if (!mcterm || mcterm.css('display')=='none') {
                 e.preventDefault();
                 mc_toggle();
                 return false;
-			} else {
-				mc_disable();
+            } else {
+                mc_disable();
                 return false;
-			}
-		}
+            }
+        }
     });
 
     function mc_send () {

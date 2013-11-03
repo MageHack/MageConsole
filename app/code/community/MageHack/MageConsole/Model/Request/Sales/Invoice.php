@@ -111,6 +111,8 @@ class MageHack_MageConsole_Model_Request_Sales_Invoice
 
         if (!$collection->count()) {
             $message = 'No match found';
+            $this->setMessage($message);
+            $this->setType(self::RESPONSE_TYPE_MESSAGE);
         } else if ($collection->count() > 0) {
             $values = $collection->toArray();
             if (is_array($values) && $values['totalRecords'] > 0) {
@@ -125,12 +127,17 @@ class MageHack_MageConsole_Model_Request_Sales_Invoice
                         $_values[] = $value;                        
                     }
                 }
-                $message = Mage::helper('mageconsole')->createTable($_values, true, array('columnWidths' => array_values($this->_columns)));
+                if (Mage::getStoreConfig('admin/mageconsole/html_tables') != 1) {
+                    $this->setType(self::RESPONSE_TYPE_MESSAGE);
+                    $message = Mage::helper('mageconsole')->createTable($_values, true, array('columnWidths' => array_values($this->_columns)));
+                    $this->setMessage($message);
+                } else {
+                    $this->setMessage($_values);
+                    $this->setType(self::RESPONSE_TYPE_LIST);
+                }
             }
         }
 
-        $this->setType(self::RESPONSE_TYPE_MESSAGE);
-        $this->setMessage($message);
         return $this;
     }
 

@@ -81,9 +81,14 @@ class MageHack_MageConsole_Model_Request_Store extends MageHack_MageConsole_Mode
         }
         $_values = array($value);
 
-        $message = Mage::helper('mageconsole')->createTable($_values, true, array('columnWidths' => array_values($this->_columns)));
-        $this->setType(self::RESPONSE_TYPE_MESSAGE);
-        $this->setMessage($message);
+        if (Mage::getStoreConfig('admin/mageconsole/html_tables') != 1) {
+            $this->setType(self::RESPONSE_TYPE_MESSAGE);
+            $message = Mage::helper('mageconsole')->createTable($_values, true, array('columnWidths' => array_values($this->_columns)));
+            $this->setMessage($message);
+        } else {
+            $this->setMessage($_values);
+            $this->setType(self::RESPONSE_TYPE_LIST);
+        }
         return $this;
     }
 

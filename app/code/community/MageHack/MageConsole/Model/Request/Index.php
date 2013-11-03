@@ -158,6 +158,8 @@ class MageHack_MageConsole_Model_Request_Index extends MageHack_MageConsole_Mode
         $collection = $this->_getMatchedResults();
         if (!$collection->count()) {
             $message = 'No match found';
+            $this->setType(self::RESPONSE_TYPE_MESSAGE);
+            $this->setMessage($message);
         } else if ($collection->count() > 0) {
             $values = $collection->toArray();
             if (isset($values['items']) && is_array($values['items'])) {
@@ -166,11 +168,16 @@ class MageHack_MageConsole_Model_Request_Index extends MageHack_MageConsole_Mode
                         $_values[] = (array_intersect_key($row, $this->_attrToShow));
                     }
                 }
-                $message = Mage::helper('mageconsole')->createTable($_values, true, $this->_columnWidths);
+                if (Mage::getStoreConfig('admin/mageconsole/html_tables') != 1) {
+                    $this->setType(self::RESPONSE_TYPE_MESSAGE);
+                    $message = Mage::helper('mageconsole')->createTable($_values, true, $this->_columnWidths);
+                    $this->setMessage($message);
+                } else {
+                    $this->setMessage($_values);
+                    $this->setType(self::RESPONSE_TYPE_LIST);
+                }
             }
         }
-        $this->setType(self::RESPONSE_TYPE_MESSAGE);
-        $this->setMessage($message);
         return $this;
     }
 

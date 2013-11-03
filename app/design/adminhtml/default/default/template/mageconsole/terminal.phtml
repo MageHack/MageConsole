@@ -180,15 +180,16 @@
 	}
 
     jQuery(document).keypress(function (e) {
-        if (!mcterm || mcterm.css('display')=='none') {
-            if (e.which == 77 && (e.ctrlKey) && (e.shiftKey)) { // shift-ctrl-m
+        if (e.which == 77 && (e.ctrlKey) && (e.shiftKey)) { // shift-ctrl-m
+        	if (!mcterm || mcterm.css('display')=='none') {
                 e.preventDefault();
                 mc_toggle();
                 return false;
-            }
-        } else {
-            mc_disable();
-        }
+			} else {
+				mc_disable();
+                return false;
+			}
+		}
     });
 
     function mc_send () {
